@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "559847316595",
+    "project_id": "image-uploader-9a310",
+    "storage_bucket": "image-uploader-9a310.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:559847316595:android:0f19b3724533b1b6895e06",
+        "android_client_info": {
+          "package_name": "com.codesquarry.srhealthcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiVylX85yhWZwfGzvkDEGlaTZlZIsP1HA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

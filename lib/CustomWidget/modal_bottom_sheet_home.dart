@@ -1,0 +1,384 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sr_health_care/const/colors.dart';
+
+class SortFilterBottomSheet extends StatefulWidget {
+  const SortFilterBottomSheet({super.key});
+
+  @override
+  State<SortFilterBottomSheet> createState() => _SortFilterBottomSheetState();
+}
+
+class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final List<String?> _selectedSortOption = List.filled(4, null);
+
+  final Map<int, Map<String, bool>> _filterData = {
+    0: {
+      'Ayurvedic (120)': false,
+      'Allopathy (60)': false,
+      'Homeopathy (40)': false,
+      'Osteopathy (40)': false,
+      'Acupuncture (25)': false,
+    },
+    1: {
+      'Event(120)': false,
+      'Job Hiring(60)': false,
+      'Product Requirement(40)': false,
+      'Supplier Requirement(40)': false,
+      'Workshops(25)': false,
+      'Campaigns(25)': false,
+    },
+    2: {
+      'Today(120)': false,
+      'Tomorrow(60)': false,
+      'This Week(40)': false,
+      'Last Week(40)': false,
+      'This Month(25)': false,
+      'Custom Range': false,
+    },
+    3: {
+      'Nearby': false,
+      'Within 5km': false,
+      'Within 10km': false,
+    },
+    4: {
+      'Individual(120)': false,
+      'Organization(60)': false,
+      'This Week(40)': false,
+    },
+    5: {
+      'Following (Yes)': false,
+      'Not Following': false,
+    },
+  };
+
+  int _selectedFilterCategory = 0;
+
+  final List<String> _filterCategories = [
+    'Field',
+    'Type',
+    'Date',
+    'Location',
+    'Post Creator',
+    'Following'
+  ];
+
+  void _resetFilters() {
+    setState(() {
+      _filterData.forEach((key, value) {
+        value.updateAll((filterKey, filterValue) => false);
+      });
+    });
+  }
+
+  void _applyFilters() {
+    final selectedFilters = _filterData.entries.expand((category) {
+      return category.value.entries
+          .where((filter) => filter.value)
+          .map((filter) => filter.key);
+    }).toList();
+
+    print('Selected Filters: $selectedFilters');
+    Navigator.pop(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.65,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildTabBar(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildSortByTab(),
+                _buildFilterByTab(),
+              ],
+            ),
+          ),
+          _bottomButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return TabBar(
+      controller: _tabController,
+      indicatorColor: Colors.deepPurpleAccent,
+      labelColor: Colors.deepPurpleAccent,
+      unselectedLabelColor: Colors.black,
+      tabs: const [
+        Tab(text: 'Sort By'),
+        Tab(text: 'Filter By'),
+      ],
+    );
+  }
+
+  Widget _buildSortByTab() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _sectionHeader('Time', 'assets/filter/greyc.png'),
+            _buildOptionRow(['Newest First', 'Oldest First'], 0),
+            const SizedBox(height: 20),
+            _sectionHeader('Location', 'assets/filter/greyll.png'),
+            _buildOptionRow(['Closest', 'Farthest'], 1),
+            const SizedBox(height: 20),
+            _sectionHeader('Popularity', 'assets/filter/greyl.png'),
+            _buildOptionRow(['Most Shared', 'Most Commented'], 2),
+            const SizedBox(height: 20),
+            _sectionHeader('Date', 'assets/filter/greycc.png'),
+            _buildOptionRow(['Today', 'Custom'], 3),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Helper to create rows of buttons for options
+  Widget _buildOptionRow(List<String> options, int sectionIndex) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: options.map((option) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedSortOption[sectionIndex] = option;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: _selectedSortOption[sectionIndex] == option
+                      ? Colors.deepPurpleAccent
+                      : Colors.white,
+                  side: BorderSide(
+                    color: _selectedSortOption[sectionIndex] == option
+                        ? Colors.deepPurpleAccent
+                        : Colors.grey.shade300,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  option,
+                  style: TextStyle(
+                      color: _selectedSortOption[sectionIndex] == option
+                          ? Colors.white
+                          : Colors.black87,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+// Helper to create section headers
+  Widget _sectionHeader(String title, String asset) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Image.asset(
+            asset,
+            height: 20,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterByTab() {
+    return Row(
+      children: [
+        // Left Side Navigation
+        Container(
+          padding: const EdgeInsets.only(left: 5),
+          width: 110,
+          color: buttonColor.withOpacity(.1),
+          child: ListView.builder(
+            itemCount: _filterCategories.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedFilterCategory = index;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        _filterCategories[index],
+                        style: GoogleFonts.poppins(
+                          color: _selectedFilterCategory == index
+                              ? buttonColor
+                              : Colors.black87,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 2,
+                        height: 25,
+                        color: _selectedFilterCategory == index
+                            ? buttonColor
+                            : Colors.transparent,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        // Right Side Filter Options
+        Expanded(
+          child: Container(
+            color: Colors.white,
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              children:
+                  _filterData[_selectedFilterCategory]!.keys.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: CheckboxListTile(
+                    side: const BorderSide(color: Colors.grey),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                    dense: true,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(
+                      option,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    value: _filterData[_selectedFilterCategory]![option],
+                    activeColor: buttonColor,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _filterData[_selectedFilterCategory]![option] = value!;
+                      });
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _bottomButtons() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: Colors.grey, width: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _resetFilters,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Reset',
+                style: TextStyle(color: buttonColor),
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                _applyFilters();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'Apply',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void showSortFilterBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+      ),
+    ),
+    builder: (_) => const SortFilterBottomSheet(),
+  );
+}
