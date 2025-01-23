@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sr_health_care/Controller/follow_unfollow_controller.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/expandable_text.dart';
-import 'package:sr_health_care/CustomWidget/follow_button.dart';
+import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
+import 'package:sr_health_care/Pages/detailPost/report_post.dart';
 import 'package:sr_health_care/Pages/followers/about_profile.dart';
 import 'package:sr_health_care/Pages/followers/modeandservice/service_to_fetahc_detail_user.dart';
 import 'package:sr_health_care/Pages/followers/modeandservice/singleuserprofiledetail.dart';
-import 'package:sr_health_care/Pages/homePage/servicesModel/follow_unfollow_api.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
+import 'package:sr_health_care/services/share_plus_service.dart';
 import 'package:sr_health_care/services/whatsapp_service.dart';
 
 class FollowerProfile extends StatefulWidget {
   String postUsedId;
-  FollowerProfile({super.key, required this.postUsedId});
+  bool? isAboveFollowing;
+  FollowerProfile({super.key, required this.postUsedId, this.isAboveFollowing});
 
   @override
   State<FollowerProfile> createState() => _FollowerProfileState();
@@ -32,17 +35,38 @@ class _FollowerProfileState extends State<FollowerProfile> {
   void initState() {
     super.initState();
     fetchUserDetail();
-    isFollowing =
-        userDetailPost?.result?.firstOrNull?.user?.isFollowing ?? false;
+    isFollowing = widget.isAboveFollowing ??
+        userDetailPost?.result?.firstOrNull?.user?.isFollowing ??
+        isFollowing;
   }
 
   Future<void> fetchUserDetail() async {
     final userDetail = await ServiceToFetahcDetailUser().fetchPostUserDetail(
       postUsedId: widget.postUsedId,
     );
+
     if (userDetail != null) {
       setState(() {
+        // Assuming `status` is the field indicating post approval, filter out unapproved posts.
         userDetailPost = userDetail;
+
+        // Check if the post is approved (assuming status == 'approved' means the post is approved)
+        var approvedPosts = userDetail.result
+            ?.where((post) => post.status == 'Approved')
+            .toList();
+
+        if (approvedPosts?.isNotEmpty ?? false) {
+          // Set the first approved post if available
+          userDetailPost?.result = approvedPosts;
+
+          // Handle the isFollowing logic as before
+          isFollowing = widget.isAboveFollowing ??
+              userDetailPost?.result?.firstOrNull?.user?.isFollowing ??
+              false;
+        } else {
+          // If no approved posts are found, you can handle this case (e.g., show a message)
+          print("No approved posts available.");
+        }
       });
     }
   }
@@ -185,14 +209,19 @@ class _FollowerProfileState extends State<FollowerProfile> {
                     fit: BoxFit.fill,
                   ),
                 ),
-                const Positioned(
+                Positioned(
                   top: 50,
                   left: 20,
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.green,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context, true);
+                      },
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.green,
+                      ),
                     ),
                   ),
                 ),
@@ -239,142 +268,113 @@ class _FollowerProfileState extends State<FollowerProfile> {
                   CustomText(
                     text:
                         '${userDetailPost?.result?.firstOrNull?.user?.name ?? ''} ${userDetailPost?.result?.firstOrNull?.user?.lastName ?? ''}',
-                    size: 18,
+                    size: 16,
                     color: blackColor,
-                    weight: FontWeight.w700,
+                    weight: FontWeight.w500,
                   ),
                   CustomText(
                     text:
                         userDetailPost?.result?.firstOrNull?.user?.department ??
                             '',
-                    size: 14,
-                    color: blackColor,
+                    size: 12,
+                    color: Colors.grey,
                     weight: FontWeight.w400,
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                    if(SharedPreferenceHelper().getUserData()?.id != userDetailPost?.result?.firstOrNull?.user?.id)
-                  Row(
-                    children: [
-                    
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            if (isFollowing) {
-                              // Open confirmation modal
-                              _showUnfollowConfirmation(
-                                context,
-                                userDetailPost?.result?.firstOrNull?.userName ??
-                                    '',
-                                () async {
-                                  // API call to unfollow the user
-                                  final result =
-                                      await FollowUnfollowApi().UnfollowUser(
-                                    userDetailPost
-                                            ?.result?.firstOrNull?.user?.id
-                                            .toString() ??
-                                        '',
-                                  );
+                  if (SharedPreferenceHelper().getUserData()?.id !=
+                      userDetailPost?.result?.firstOrNull?.user?.id)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final controller = Get.find<FollowController>();
+                              final userId = userDetailPost
+                                      ?.result?.firstOrNull?.user?.id
+                                      .toString() ??
+                                  '';
 
-                                  Navigator.pop(context); // Close the modal
-                                  if (result.$1) {
-                                    setState(() {
-                                      isFollowing = false;
-                                    });
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Failed to unfollow ${userDetailPost?.result?.firstOrNull?.userName ?? ''}',
+                              await controller.toggleFollow(
+                                userId,
+                                isFollowing: controller.isFollowing(userId),
+                              );
+
+                              isFollowing = !isFollowing;
+
+                              setState(() {});
+                            },
+                            child: Obx(() {
+                              final controller = Get.find<FollowController>();
+                              print(controller.UserId);
+
+                              return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isFollowing ? Colors.green : Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: isFollowing
+                                        ? Colors.green
+                                        : Colors.black,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (isFollowing) ...[
+                                      Icon(Icons.check,
+                                          color: Colors.white, size: 14),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'Following',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
                                         ),
-                                        behavior: SnackBarBehavior.floating,
                                       ),
-                                    );
-                                  }
-                                },
+                                    ] else ...[
+                                      Icon(Icons.add,
+                                          color: Colors.black, size: 14),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'Follow',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               );
-                            } else {
-                              // API call to follow the user
-                              final result =
-                                  await FollowUnfollowApi().followUser(
-                                userDetailPost?.result?.firstOrNull?.user?.id
-                                        .toString() ??
-                                    '',
-                              );
-                              if (result.$1) {
-                                setState(() {
-                                  isFollowing = true;
-                                });
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Failed to follow the user'),
-                                    behavior: SnackBarBehavior.floating,
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 7),
-                            decoration: BoxDecoration(
-                              color: isFollowing ? Colors.green : Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color:
-                                    isFollowing ? Colors.green : Colors.black,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (isFollowing) ...[
-                                  Icon(Icons.check,
-                                      color: Colors.white, size: 14),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    'Following',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ] else ...[
-                                  Icon(Icons.add,
-                                      color: Colors.black, size: 14),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    'Follow',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ],
+                            }),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Visibility(
+                          visible: false,
+                          child: InkWell(
+                            onTap: () {
+                              _showBottomSheetProfile(context);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey)),
+                              child: const Icon(Icons.more_horiz),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          _showBottomSheetProfile(context);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey)),
-                          child: const Icon(Icons.more_horiz),
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -382,19 +382,19 @@ class _FollowerProfileState extends State<FollowerProfile> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _columnView('assets/followers/follower.png',
-                          '${userDetailPost?.totalfollowersCount} Posts '),
+                          '${userDetailPost?.totalfollowingCount} Followers '),
                       _columnView('assets/followers/post.png',
                           '${userDetailPost?.totalPostCount} Posts'),
                       _columnView('assets/followers/following.png',
-                          '${userDetailPost?.totalfollowingCount} Following'),
+                          '${userDetailPost?.totalfollowersCount} Following'),
                     ],
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 12,
                   ),
                   CustomText(
                     text: 'About',
-                    size: 18,
+                    size: 16,
                     color: blackColor,
                     weight: FontWeight.w400,
                   ),
@@ -403,13 +403,13 @@ class _FollowerProfileState extends State<FollowerProfile> {
                   ),
                   ExpandableText(
                       text: userDetailPost?.result?.firstOrNull?.user?.bio ??
-                          'No Bio Available'),
+                          'No Bio Available' , ),
                   const SizedBox(
                     height: 20,
                   ),
                   CustomText(
                     text: 'All Posts',
-                    size: 18,
+                    size: 16,
                     color: blackColor,
                     weight: FontWeight.w400,
                   ),
@@ -419,17 +419,18 @@ class _FollowerProfileState extends State<FollowerProfile> {
                     itemBuilder: (_, index) =>
                         _postCard(userDetailPost?.result![index]),
                     separatorBuilder: (_, __) => SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     itemCount: userDetailPost?.result?.length ?? 0,
                   ),
+                  // SizedBox(height: 20,)
                 ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar:   GestureDetector(
+      bottomNavigationBar: GestureDetector(
         onTap: () {
           String mobileNumber =
               '+91${userDetailPost?.result?.firstOrNull?.user?.mobileNo ?? ''}';
@@ -445,7 +446,7 @@ class _FollowerProfileState extends State<FollowerProfile> {
             textAlign: TextAlign.center,
             'Contact Now',
             style: GoogleFonts.poppins(
-                fontSize: 16, color: whiteColor, fontWeight: FontWeight.w700),
+                fontSize: 14, color: whiteColor, fontWeight: FontWeight.w700),
           ),
         ),
       ),
@@ -500,9 +501,11 @@ class _FollowerProfileState extends State<FollowerProfile> {
               CircleAvatar(
                 radius: 20,
                 child: AppCacheNetworkImage(
-                    borderRadius: 50,
-                    width: Get.width,
-                    imageUrl: feedPost?.user?.photo?.url ?? ''),
+                  borderRadius: 50,
+                  width: Get.width,
+                  imageUrl: feedPost?.user?.photo?.url ?? '',
+                  height: 100,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -511,17 +514,18 @@ class _FollowerProfileState extends State<FollowerProfile> {
                   children: [
                     CustomText(
                       text:
-                          '${feedPost?.user?.name ?? ''}  ${feedPost?.user?.lastName ?? ''}',
-                      size: 14,
+                          '${feedPost?.user?.name ?? ''} ${feedPost?.user?.lastName ?? ''}',
+                      size: 12,
                       color: blackColor,
                       weight: FontWeight.w500,
                     ),
                     CustomText(
                       text: feedPost?.user?.department ?? '',
-                      size: 12,
+                      size: 10,
                       color: Colors.grey,
                       weight: FontWeight.w400,
                     ),
+                    SizedBox(height: 5,),
                     Row(
                       children: [
                         Image.asset(
@@ -529,11 +533,12 @@ class _FollowerProfileState extends State<FollowerProfile> {
                           height: 12,
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 8,
                         ),
                         TimeAgoCustomWidget(
                           createdAt:
-                              feedPost?.user?.createdAt?.toString() ?? '',
+                              feedPost?.postType?.createdAt?.toString() ?? '',
+                              size: 10,
                         ),
                       ],
                     ),
@@ -543,7 +548,13 @@ class _FollowerProfileState extends State<FollowerProfile> {
               // Spacer(),
               InkWell(
                   onTap: () {
-                    _showBottomSheet(context);
+                    _showBottomSheet(
+                      context,
+                      feedPost?.postType?.fieldName ?? '',
+                      feedPost?.id ?? 0,
+                      "${feedPost?.user?.name ?? ''} ${feedPost?.user?.lastName ?? ''}",
+                      feedPost?.user?.id ?? 0,
+                    );
                   },
                   child: const Icon(Icons.more_vert, color: Colors.grey)),
             ],
@@ -574,7 +585,13 @@ class _FollowerProfileState extends State<FollowerProfile> {
     );
   }
 
-  void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(
+    BuildContext context,
+    String title,
+    int iD,
+    String userName,
+    int userID,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -605,7 +622,16 @@ class _FollowerProfileState extends State<FollowerProfile> {
                 icon: Icons.bookmark_outline,
                 label: 'Save Post',
                 onTap: () {
-                  Navigator.pop(context); // Add your functionality here
+                  Obx(() {
+                    return SaveButton(
+                      postId: iD,
+                      isSaved: savepostController.savedPostID.contains(iD),
+                    );
+
+                  });
+                  // Add your functionality here
+                                                        Navigator.pop(context);
+
                 },
               ),
               _bottomSheetOption(
@@ -613,7 +639,7 @@ class _FollowerProfileState extends State<FollowerProfile> {
                 icon: Icons.share_outlined,
                 label: 'Share Post',
                 onTap: () {
-                  Navigator.pop(context); // Add your functionality here
+                  ShareService().shareText(title);
                 },
               ),
               _bottomSheetOption(
@@ -621,7 +647,22 @@ class _FollowerProfileState extends State<FollowerProfile> {
                 icon: Icons.report_gmailerrorred_outlined,
                 label: 'Report Post',
                 onTap: () {
-                  Navigator.pop(context); // Add your functionality here
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(16)),
+                    ),
+                    builder: (BuildContext context) {
+                      return ReportPost(
+                        postId: iD,
+                        postTitle: title,
+                        userId: userID,
+                        userName: userName,
+                      );
+                    },
+                  );
                 },
               ),
             ],
@@ -753,11 +794,11 @@ Column _columnView(String image, String title) {
         height: 24,
       ),
       const SizedBox(
-        height: 10,
+        height: 5,
       ),
       CustomText(
         text: title,
-        size: 12,
+        size: 10,
         color: buttonColor,
         weight: FontWeight.w400,
       ),

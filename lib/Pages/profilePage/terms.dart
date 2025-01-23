@@ -74,7 +74,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                 '• We do not sell or rent your data to third parties.\n'
                 '• However, we may share data with:\n'
                 '  - Service providers assisting in our operations.\n'
-                '  - Legal authorities if required by law.',
+                ' - Legal authorities if required by law.',
                 screenWidth,
               ),
               const SizedBox(height: 16),
@@ -117,12 +117,12 @@ class PrivacyPolicyPage extends StatelessWidget {
               _sectionTitle('10. Contact Us', screenWidth),
               _sectionBody(
                 '• SR FIRST AID HEALTH CARE PVT LTD\n'
-                '  17/305, FIRST FLOOR, THRIKKAKARA MUNICIPALITY,\n'
-                '  SEA PORT AIR PORT ROAD, CHITTETHUKARA,\n'
-                '  KAKKANAD, KOCHI, KERALA PIN – 682030\n'
-                '  Email: info@srhealthcarecommunity.com\n'
-                '  Phone: 9447008356, 9447108356',
-                screenWidth,
+                '17/305, FIRST FLOOR, THRIKKAKARA MUNICIPALITY,\n'
+                'SEA PORT AIR PORT ROAD, CHITTETHUKARA,\n'
+                'KAKKANAD, KOCHI, KERALA PIN  682030\n'
+                'Email: info@srhealthcarecommunity.com\n'
+                'Phone: 9447008356, 9447108356',
+                screenWidth ,
               ),
               const SizedBox(height: 24),
             ],
@@ -154,7 +154,7 @@ class PrivacyPolicyPage extends StatelessWidget {
         color: Colors.black,
         fontWeight: FontWeight.w400,
       ),
-      textAlign: TextAlign.justify,
+      textAlign: TextAlign.start,
     );
   }
 }

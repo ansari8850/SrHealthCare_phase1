@@ -135,9 +135,9 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
                         contentPadding:
                             const EdgeInsets.only(left: 10, right: 5),
                         leading: CircleAvatar(
-                          radius: 29,
+                          radius: 26,
                           backgroundColor: buttonColor,
-                          child: AppCacheNetworkImage(imageUrl: post.post?.user?.photo?.url , fit: BoxFit.cover, borderRadius: 50, width: 100,),
+                          child: AppCacheNetworkImage(imageUrl: post.post?.user?.photo?.url , fit: BoxFit.cover, borderRadius: 50, width: 100,  height: 100,),
                         ),
                         // AppCacheNetworkImage(
                         //   imageUrl: post.user?.photo?.url  ??'',
@@ -150,14 +150,14 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
                           '${post.post?.userName}',
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
                         subtitle: Text(
                           // post.user?.companyName ?? '',
                           '${post.post?.user?.department}',
                           style: GoogleFonts.poppins(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: Colors.grey.shade600,
                           ),
                         ),
@@ -223,6 +223,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
                                     height: 14),
                                 const SizedBox(width: 5),
                                 TimeAgoCustomWidget(
+                                  size: 10,
                                   createdAt:
                                       post.post?.createdAt.toString() ?? '',
                                 ),
@@ -243,7 +244,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
 
   Widget _buildTag(String tag) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(20),
@@ -255,7 +256,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
           Text(
             tag,
             style: GoogleFonts.poppins(
-              fontSize: 12,
+              fontSize: 10,
               color: Colors.grey.shade800,
             ),
           ),
@@ -276,7 +277,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: 12,
+            fontSize: 10,
             color: const Color(0xff6656E0),
           ),
         ),

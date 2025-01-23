@@ -32,7 +32,7 @@ class _ExpandableTextState extends State<ExpandableText> {
               ? widget.text // Show full text if expanded
               : '${widget.text.substring(0, widget.trimLength)}...', // Show trimmed text
           style: GoogleFonts.poppins(
-            fontSize: 12,
+            fontSize: 10,
             color: Color(0xff55545D),
             fontWeight: FontWeight.w400,
           ),
@@ -48,7 +48,7 @@ class _ExpandableTextState extends State<ExpandableText> {
               _isExpanded ? "See Less" : "See More",
               style: GoogleFonts.poppins(
                 // height: 14,
-                  fontSize: 12,
+                  fontSize: 10,
                   color: widget.color,
                   fontWeight: FontWeight.w400,
                   decoration: TextDecoration.underline),

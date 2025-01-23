@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-42:/values-land/values-land.xml",
+            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-45:/values-land/values-land.xml",
             "map": [
                 {
                     "source": "C:\\Users\\91885\\.gradle\\caches\\transforms-3\\c029d973be620a8c27af21475e044d05\\transformed\\appcompat-1.1.0\\res\\values-land\\values-land.xml",

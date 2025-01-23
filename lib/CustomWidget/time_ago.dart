@@ -10,7 +10,6 @@ class TimeAgoCustomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Parse the `createdAt` string to a `DateTime` object
     final formattedTime = timeago
         .format(DateTime.tryParse(createdAt) ?? DateTime.now(), locale: 'en');
 

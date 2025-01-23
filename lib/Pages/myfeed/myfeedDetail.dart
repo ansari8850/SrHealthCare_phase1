@@ -1,23 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/dotted_divider.dart';
-import 'package:sr_health_care/CustomWidget/follow_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
 import 'package:sr_health_care/Pages/Form_pages/create_post_service.dart';
-import 'package:sr_health_care/Pages/detailPost/report_post.dart';
-import 'package:sr_health_care/Pages/followers/follower_profile.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/home_api_service.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
-import 'package:sr_health_care/services/post_save_and_unsave_service.dart';
 import 'package:sr_health_care/services/share_plus_service.dart';
-import 'package:sr_health_care/services/whatsapp_service.dart';
 
 class MyFeedDetail extends StatefulWidget {
   final int id;
@@ -62,11 +55,7 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          // contentPadding: EdgeInsets.symmetric(horizontal: 10 , vertical: 8),
-          //  buttonPadding: EdgeInsets.only(bottom: 0),
-          // titlePadding: EdgeInsets.only(top: 8 , bottom: 8 , left: 10 , right: 10),//
           actionsPadding: EdgeInsets.only(bottom: 0, right: 8, top: 0),
-          // contentPadding: EdgeInsets.only(bottom: 0 , left: 20 , right: 20 , top: 8),
           backgroundColor: Colors.white,
           title: CustomText(
               text: 'Are You Sure You Want To Delete This Post?',
@@ -86,21 +75,12 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
           ),
           actions: <Widget>[
             TextButton(
-              child: CustomText(
-                  text: 'Delete',
-                  size: 14,
-                  color: Colors.red,
-                  weight: FontWeight.w500),
-              onPressed: () async {
-                await CreatePostService().deletePost(postId);
-
-                // Ensure only the current tab remains active (no changes to the state)
-                setState(() {});
-
-                // Close the dialog
-                Navigator.pop(context);
-              },
-            ),
+                child: CustomText(
+                    text: 'Delete',
+                    size: 14,
+                    color: Colors.red,
+                    weight: FontWeight.w500),
+                onPressed: () => _showMyDialog(postId)),
             TextButton(
               child: CustomText(
                   text: 'Cancel',
@@ -184,7 +164,7 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: _postDetail?.status == 'Approved'
@@ -193,7 +173,9 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                               ? Color(0xffF7F7E8)
                               : _postDetail?.status == 'Rejected'
                                   ? Colors.red.withOpacity(.3)
-                                  : Colors.white,
+                                  : _postDetail?.status == 'Reported'
+                                      ? Colors.blueGrey.withOpacity(.3)
+                                      : Colors.white,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -205,11 +187,13 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                                   ? Color(0xffB1AB1D)
                                   : _postDetail?.status == 'Rejected'
                                       ? Color(0xffAF4B4B)
-                                      : Colors.white,
-                          radius: 10,
+                                      : _postDetail?.status == 'Reported'
+                                          ? Colors.blueGrey
+                                          : Colors.white,
+                          radius: 5,
                         ),
                         SizedBox(
-                          width: 10,
+                          width: 8,
                         ),
                         Text(
                           _postDetail?.status == 'Approved'
@@ -218,9 +202,11 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                                   ? 'Pending'
                                   : _postDetail?.status == 'Rejected'
                                       ? 'Rejected'
-                                      : '',
+                                      : _postDetail?.status == 'Reported'
+                                          ? 'Reported'
+                                          : '',
                           style: GoogleFonts.poppins(
-                            fontSize: 12,
+                            fontSize: 10,
                             fontWeight: FontWeight.w400,
                             color: _postDetail?.status == 'Approved'
                                 ? Color(0xff4976F4)
@@ -228,13 +214,15 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                                     ? Color(0xffB1AB1D)
                                     : _postDetail?.status == 'Rejected'
                                         ? Color(0xffAF4B4B)
-                                        : Colors.white,
+                                        : _postDetail?.status == 'Reported'
+                                            ? Colors.blueGrey
+                                            : Colors.white,
                           ),
                         )
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
 
                   // Action Buttons
                   if (_postDetail?.status == 'Approved')
@@ -252,10 +240,11 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                           width: 20,
                         ),
                         GestureDetector(
-                            onTap: () async {
-                              await CreatePostService()
-                                  .deletePost(_postDetail?.id ?? 0);
-                              Navigator.pop(context, true);
+                            onTap: ()  {
+                              // await CreatePostService()
+                              //     .deletePost(_postDetail?.id ?? 0);
+                              // Navigator.pop(context, true);
+                               _showDeleteConfirmationDialog(context);
                             },
                             child: _buildActionIcon(
                                 'assets/homepage/delete.png',
@@ -272,7 +261,7 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                             text: 'Reason:',
                             style: GoogleFonts.poppins(
                                 color: buttonColor,
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w400),
                             children: [
                           TextSpan(
@@ -280,12 +269,12 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                                   ' There is No Valid Reason For the Rejection till Now ',
                               style: GoogleFonts.poppins(
                                   color: Color(0xffDA4019),
-                                  fontSize: 14,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w400))
                         ])),
 
                   Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: MySeparator(
                       // height: 10,
                       color: Colors.grey.withOpacity(.3),
@@ -299,9 +288,14 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                       Row(
                         children: [
                           Text(
-                            _postDetail?.title ?? '',
+                            _postDetail?.title != null &&
+                                    _postDetail!.title!.length > 20
+                                ? '${_postDetail!.title!.substring(0, 20)}...'
+                                : _postDetail?.title ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(
-                              fontSize: 14,
+                              fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: buttonColor,
                             ),
@@ -309,50 +303,23 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                           Spacer(),
                           Image.asset(
                             'assets/homepage/clock.png',
-                            height: 15,
+                            height: 12,
                           ),
                           SizedBox(
                             width: 5,
                           ),
                           TimeAgoCustomWidget(
+                            size: 10,
                               createdAt:
                                   _postDetail?.createdAt.toString() ?? '')
                         ],
                       ),
-                      const SizedBox(height: 7),
+                      const SizedBox(height: 10),
                       Text(
                         _postDetail?.description ?? '',
                         style: GoogleFonts.poppins(
-                            fontSize: 12, color: Colors.grey),
+                            fontSize: 10, color: Colors.grey),
                       ),
-                      const SizedBox(height: 15),
-                      // Container(
-                      //   // width: MediaQuery.of(context).size.width / 2,
-                      //   padding: const EdgeInsets.symmetric(
-                      //       vertical: 8, horizontal: 10),
-                      //   decoration: BoxDecoration(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       color: buttonColor.withOpacity(.1)),
-                      //   child: Row(
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       Image.asset(
-                      //         'assets/homepage/tag.png',
-                      //         height: 13,
-                      //       ),
-                      //       const SizedBox(
-                      //         width: 5,
-                      //       ),
-                      //       Text(
-                      //         'Under Development',
-                      //         style: GoogleFonts.poppins(
-                      //             fontSize: 10,
-                      //             fontWeight: FontWeight.w400,
-                      //             color: blackColor),
-                      //       )
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -389,10 +356,11 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                   if (_postDetail?.status == 'Rejected')
                     Center(
                       child: GestureDetector(
-                        onTap: () async {
-                          await CreatePostService()
-                              .deletePost(_postDetail?.id ?? 0);
-                          Navigator.pop(context, true);
+                        onTap: () {
+                          _showDeleteConfirmationDialog(context);
+                          // await CreatePostService()
+                          //     .deletePost(_postDetail?.id ?? 0);
+                          // Navigator.pop(context, true);
                         },
                         child: Container(
                           padding:
@@ -417,27 +385,63 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
     );
   }
 
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: whiteColor,
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this post?' ,style: GoogleFonts.poppins(
+                color: blackColor
+              )),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel', style: GoogleFonts.poppins(
+                color: blackColor
+              ),),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Call the delete function
+                await CreatePostService().deletePost(_postDetail?.id ?? 0);
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pop(context, true); // Pop to the main page
+              },
+              child: Text('Delete',style: GoogleFonts.poppins(
+                color: Colors.red
+              )),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Helper function to build the share icon
   Widget _buildActionIcon(String assetPath, String label, Color color) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.all(3),
           decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(50)),
           child: Image.asset(
             assetPath,
-            height: 15,
-            width: 15,
+            height: 12,
+            width: 12,
           ),
         ),
         const SizedBox(width: 5),
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 10,
             color: color,
           ),
         ),
@@ -446,69 +450,66 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
   }
 }
 
-// Build action buttons
-Widget _buildActionIcon(String icon, String label) {
-  return Column(
-    children: [
-      Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(
-              color: Colors.grey.withOpacity(.3),
-            )),
-        child: Image.asset(
-          icon,
-          height: 15,
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(label,
-          style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: const Color(0xff0D654E),
-              fontWeight: FontWeight.w400)),
-    ],
-  );
-}
-
 // Build event info details
 Widget _buildEventInfo(String text, String icon) {
   return Column(
     children: [
       Image.asset(
         icon,
-        width: 24,
-        height: 24,
+        width: 18,
+        height: 18,
       ),
       const SizedBox(height: 4),
       Text(text,
           style: GoogleFonts.poppins(
-              fontSize: 10, color: const Color(0xff0A4D3C))),
+              fontSize: 8, color: const Color(0xff0A4D3C))),
     ],
   );
 }
 
 Widget _buildEventInfoDate(String createdAt, String iconAsset) {
   try {
-    // Ensure the string ends with a valid ISO format
-    // String sanitizedDate = '${createdAt.split('.').first}Z';
-
-    // Parse the sanitized date
+    // Parse the date in ISO 8601 format
     DateTime dateTime = DateTime.parse(createdAt);
 
-    // Format the date and time
+    // Format the date and time for display
     String formattedDate = DateFormat('MMMM d, y').format(dateTime);
-    String startTime = DateFormat('h:mm a').format(dateTime);
+    String postedTime = DateFormat('h:mm a').format(dateTime);
 
-    // Define the end time (example: 6 hours later)
-    DateTime endDateTime = dateTime.add(const Duration(hours: 6));
-    String endTime = DateFormat('h:mm a').format(endDateTime);
-
-    // Combine formatted strings for display
-    String eventInfo = "$formattedDate\n$startTime - $endTime";
-
-    // Return widget with icon and event info
+    // Return a user-friendly widget with icon, date, and time
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          iconAsset,
+          width: 18, // Slightly larger for better UX
+          height: 18,
+          fit: BoxFit.contain,
+        ),
+         // Added spacing for better visual separation
+        Text(
+          formattedDate,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 8, // Updated font size for better readability
+            fontWeight: FontWeight.w400,
+            color: Color(0xff0A4D3C),
+          ),
+        ),
+       // Spacing between date and time
+        Text(
+          postedTime,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 8, // Slightly smaller font size for time
+            fontWeight: FontWeight.w400, // Slightly lighter for distinction
+            color: Color(0xff0A4D3C),
+          ),
+        ),
+      ],
+    );
+  } catch (e) {
+    // Fallback for unexpected errors
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -518,30 +519,15 @@ Widget _buildEventInfoDate(String createdAt, String iconAsset) {
           height: 24,
           fit: BoxFit.contain,
         ),
-        const SizedBox(width: 8),
-        Text(
-          eventInfo,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  } catch (e) {
-    // Handle invalid date
-    return Column(
-      children: [
-        Image.asset(
-          iconAsset,
-          width: 24,
-          height: 24,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(width: 8),
+        const SizedBox(height: 6),
         const Text(
-          "Invalid Date",
-          style: TextStyle(fontSize: 14, color: Colors.red),
+          "Posted recently",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff0A4D3C),
+          ),
         ),
       ],
     );

@@ -238,6 +238,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             value: controller.text.isNotEmpty && items.contains(controller.text)
                 ? controller.text
                 : null,
@@ -561,22 +562,27 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ),
         ),
         onPressed: () {
-          final postType = PostType(
-            fieldName: fieldController.text,
-            type: typeController.text,
-          );
+          // final postType = PostType(
+          //   fieldName: fieldController.text,
+          //   type: typeController.text,
+          // );
+          final selectedField =fieldList.firstWhere((item)=> item.name ==fieldController.text , orElse: () => FieldTypeModel(),);
+          final fieldId =selectedField.id;
+          final selectedPostType =  postTypeList.firstWhere((item)=>item.name == typeController.text , orElse :()=> FieldTypeModel());
+          final postTypeId = selectedPostType.id;
 
           final post = PostModel(
               location: locationController.text,
-              fieldName: postType.fieldName,
-              
-              postType: postType,
+              fieldName: PostType(fieldName: fieldController.text).fieldName,
+              fieldId: fieldId.toString(),
+              postTypeId:postTypeId.toString() ,
+              postType: PostType(type: typeController.text),
               createdAt: DateTime.now(),
               autoDeleteDate: _deleteDate ?? DateTime.now(),
               // autoDeleteDate : _isAutoDeleteEnabled,
               thumbnail: selectedFile?.path ?? '',
               description: descriptionController.text ?? '',
-              title: postType.fieldName);
+              title: PostType(fieldName: fieldController.text).fieldName);
           Get.to(PreviewPostPage(
             post: post,
           ));

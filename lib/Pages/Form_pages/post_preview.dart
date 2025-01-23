@@ -58,7 +58,8 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
               child: _postDetailTile(
                   '${SharedPreferenceHelper().getUserData()?.displayName ?? ""} (${SharedPreferenceHelper().getUserData()?.department ?? ''}) '
                       '',
-                  SharedPreferenceHelper().getUserData()?.companyName ?? "No Company Name Availabel",
+                  SharedPreferenceHelper().getUserData()?.companyName ??
+                      "No Company Name Availabel",
                   '${SharedPreferenceHelper().getUserData()?.address ?? ""}(Hybrid)'),
             ),
             const SizedBox(height: 16),
@@ -125,7 +126,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
             //   child: _buildDateField('Date', 'Set a specific date',
             //       DateFormat("dd MMM yyyy").format(widget.post.autoDeleteDate)),
             // ),
-            
+
             // const SizedBox(height: 16),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -516,16 +517,15 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
           final imageFile = File(widget.post.thumbnail ?? '');
           final imageUrl = await FirebaseStorageService().uploadFile(imageFile);
           final message = await CreatePostService().createPost(
-            description: widget.post.description,
-            fieldId: 2,
-            location: widget.post.location,
-            date: widget.post.createdAt.toString(),
-            autodeletedate: widget.post.autoDeleteDate.toString(),
-            thumbnail: imageUrl,
-            
-            postType: widget.post.postType?.type,
-            title: widget.post.postType?.fieldName
-          );
+              description: widget.post.description,
+              fieldId: int.tryParse(widget.post.fieldId ?? ''),
+              location: widget.post.location,
+              date: widget.post.createdAt.toString(),
+              autodeletedate: widget.post.autoDeleteDate.toString(),
+              thumbnail: imageUrl,
+              postType: widget.post.postType?.type,
+              postId:  widget.post.postType?.id??0,
+              title: widget.post.fieldName);
           setState(() {
             isLoading = false;
           });

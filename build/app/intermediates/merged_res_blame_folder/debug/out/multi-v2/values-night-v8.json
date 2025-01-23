@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-42:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-45:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "C:\\Users\\91885\\flutter_application_3\\android\\app\\src\\main\\res\\values-night\\styles.xml",

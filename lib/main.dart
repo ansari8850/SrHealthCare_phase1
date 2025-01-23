@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sr_health_care/Controller/follow_unfollow_controller.dart';
+import 'package:sr_health_care/Controller/save_post_controller.dart';
 import 'package:sr_health_care/Pages/authPages/login_pages.dart';
 import 'package:sr_health_care/Pages/splash/screen1.dart';
 import 'package:sr_health_care/const/sharedference.dart';
@@ -9,10 +11,15 @@ import 'Global/bottom_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   await SharedPreferenceHelper().init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+    Get.put(FollowController());
+    Get.put(SavePostController());
+    
+
   runApp(const MyApp());
 }
 

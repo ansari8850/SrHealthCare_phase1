@@ -5,10 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/dotted_divider.dart';
 import 'package:sr_health_care/CustomWidget/follow_button.dart';
+import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
+import 'package:sr_health_care/Global/bottom_navigation.dart';
 import 'package:sr_health_care/Pages/detailPost/report_post.dart';
 import 'package:sr_health_care/Pages/followers/follower_profile.dart';
-import 'package:sr_health_care/Pages/homePage/main_home_page.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/home_api_service.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/const/colors.dart';
@@ -16,6 +17,7 @@ import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/services/post_save_and_unsave_service.dart';
 import 'package:sr_health_care/services/share_plus_service.dart';
 import 'package:sr_health_care/services/whatsapp_service.dart';
+
 
 class PostDetailPage extends StatefulWidget {
   final PostModel post;
@@ -40,6 +42,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
     try {
       _postDetail =
           await PostService().fetchPostDetail(postid: widget.post?.id ?? -1);
+
+      
     } catch (e) {
       debugPrint("Error fetching post details: $e");
     } finally {
@@ -53,7 +57,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
   void initState() {
     super.initState();
     _fetchUserDetail();
-    
   }
 
   bool isPostSaved = false;
@@ -137,10 +140,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     color: Colors.green,
                     size: 17,
                   )),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Get.back()
             ),
           ),
-
+    
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -155,7 +158,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 children: [
                   // Top Padding
                   const SizedBox(height: 16),
-
+    
                   // Action Buttons
                   Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceAround,/
@@ -171,7 +174,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       const SizedBox(
                         width: 20,
                       ),
-                    SaveButton(isSaved:_postDetail?.isSaved == -1, postId: _postDetail!.id ?? -1, layoutType: Axis.vertical,),
+                      Obx(()=>
+                         SaveButton(
+                          isSaved: savepostController.savedPostID
+                              .contains(_postDetail?.id),
+                          postId: _postDetail?.id ?? -1,
+                          layoutType: Axis.vertical,
+                        ),
+                      ),
                       const SizedBox(
                         width: 20,
                       ),
@@ -185,7 +195,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   top: Radius.circular(16)),
                             ),
                             builder: (BuildContext context) {
-                              return const ReportPost();
+                              return  ReportPost(
+                                postId: _postDetail?.id ?? -1 ,
+                                postTitle: _postDetail?.postType?.fieldName??'',
+                                userId: _postDetail?.user?.id ?? 0,
+                                userName: "${_postDetail?.user?.name??''} ${_postDetail?.user?.lastName}",
+                              );
                             },
                           );
                         },
@@ -194,24 +209,25 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                       const Spacer(),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.asset(
                             'assets/homepage/clock.png',
-                            height: 15,
+                            height: 12,
                           ),
                           const SizedBox(
                             width: 5,
                           ),
                           TimeAgoCustomWidget(
-                            createdAt: _postDetail?.createdAt.toString() ?? '',
-                            size: 12,
+                            createdAt:
+                                _postDetail?.createdAt.toString() ?? '',
+                            size: 10,
                           ),
                         ],
                       )
                     ],
                   ),
-
+    
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: MySeparator(
@@ -219,19 +235,20 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       color: Colors.grey.withOpacity(.3),
                     ),
                   ),
-
+    
                   // Profile Details
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: ListTile(
+                        child: ListTile( 
                           onTap: () {
                             Get.to(FollowerProfile(
-                              postUsedId: _postDetail?.userId.toString() ?? '',
+                              isAboveFollowing: _postDetail?.user?.isFollowing,
+                              postUsedId:
+                                  _postDetail?.userId.toString() ?? '',
                             ));
-                            
                           },
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
@@ -252,8 +269,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           title: Text(
                             '${_postDetail?.userName ?? ''}',
                             style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
                             ),
                           ),
                           //TODO: Change the subtitle to the user's position
@@ -265,10 +282,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               )),
                         ),
                       ),
-                      if (_postDetail?.user != null && SharedPreferenceHelper().getUserData()?.id != _postDetail?.user?.id )
+                      if (_postDetail?.user != null &&
+                          SharedPreferenceHelper().getUserData()?.id !=
+                              _postDetail?.user?.id)
                         FollowButton(
                           user: _postDetail!.user!,
-                          onFollowStatusChange: (){
+                          onFollowStatusChange: () {
                             setState(() {
                               _fetchUserDetail();
                             });
@@ -276,7 +295,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         ),
                     ],
                   ),
-
+    
                   // Position and Description
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +303,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       Text(
                         _postDetail?.title ?? '',
                         style: GoogleFonts.poppins(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: buttonColor,
                         ),
@@ -293,13 +312,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       Text(
                         _postDetail?.description ?? '',
                         style: GoogleFonts.poppins(
-                            fontSize: 12, color: Colors.grey),
+                            fontSize: 10, color: Colors.grey),
                       ),
                       const SizedBox(height: 15),
                       Container(
                         // width: MediaQuery.of(context).size.width / 2,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 10),
+                            vertical: 5, horizontal: 8),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: buttonColor.withOpacity(.1)),
@@ -308,7 +327,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           children: [
                             Image.asset(
                               'assets/homepage/tag.png',
-                              height: 13,
+                              height: 12,
                             ),
                             const SizedBox(
                               width: 5,
@@ -325,14 +344,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-
+                  const SizedBox(height: 10),
+    
                   const Divider(
                     thickness: .1,
                     color: Colors.grey,
                   ),
                   const SizedBox(height: 10),
-
+    
                   // Event Info
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +360,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           'assets/detailpost/location.png'),
                       _buildEventInfoDate(
                         _postDetail?.createdAt.toString() ?? '',
-                        // '${DateFormat.yMMMMEEEEd().format(_postDetail?.createdAt ?? DateTime.now())}\n${DateFormat("h:mm a").format(_postDetail?.createdAt ?? DateTime.now())}',
                         'assets/detailpost/cal.png',
                       ),
                       _buildEventInfo(_postDetail?.user?.fieldName ?? '',
@@ -365,7 +383,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
       bottomNavigationBar: GestureDetector(
         onTap: () {
           WhatsAppService().launchWhatsAppCall(
-              phoneNumber: _postDetail?.user?.mobileNo ?? '', context: context);
+              phoneNumber: _postDetail?.user?.mobileNo ?? '',
+              context: context);
         },
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -377,7 +396,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               'Contact Now',
               style: GoogleFonts.poppins(
                 color: whiteColor,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -394,14 +413,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
       children: [
         Image.asset(
           assetPath,
-          height: 24,
-          width: 24,
+          height: 18,
+          width: 18,
         ),
         const SizedBox(height: 5),
         Text(
           label,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 10,
             color: Colors.black,
           ),
         ),
@@ -410,31 +429,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 }
 
-// Build action buttons
-Widget _buildActionIcon(String icon, String label) {
-  return Column(
-    children: [
-      Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(
-              color: Colors.grey.withOpacity(.3),
-            )),
-        child: Image.asset(
-          icon,
-          height: 15,
-        ),
-      ),
-      const SizedBox(height: 4),
-      Text(label,
-          style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: const Color(0xff0D654E),
-              fontWeight: FontWeight.w400)),
-    ],
-  );
-}
 
 // Build event info details
 Widget _buildEventInfo(String text, String icon) {
@@ -442,37 +436,60 @@ Widget _buildEventInfo(String text, String icon) {
     children: [
       Image.asset(
         icon,
-        width: 24,
-        height: 24,
+        width: 18,
+        height: 18,
       ),
       const SizedBox(height: 4),
       Text(text,
           style: GoogleFonts.poppins(
-              fontSize: 10, color: const Color(0xff0A4D3C))),
+              fontSize: 8, color: const Color(0xff0A4D3C))),
     ],
   );
 }
 
 Widget _buildEventInfoDate(String createdAt, String iconAsset) {
   try {
-    // Ensure the string ends with a valid ISO format
-    // String sanitizedDate = '${createdAt.split('.').first}Z';
+    // Parse the date in ISO 8601 format
+    DateTime dateTime = DateTime.parse(createdAt);
 
-    // Parse the sanitized date
-    DateTime dateTime = DateTime.tryParse(createdAt) ?? DateTime.now();
-
-    // Format the date and time
+    // Format the date and time for display
     String formattedDate = DateFormat('MMMM d, y').format(dateTime);
-    String startTime = DateFormat('h:mm a').format(dateTime);
+    String postedTime = DateFormat('h:mm a').format(dateTime);
 
-    // Define the end time (example: 6 hours later)
-    DateTime endDateTime = dateTime.add(const Duration(hours: 6));
-    String endTime = DateFormat('h:mm a').format(endDateTime);
-
-    // Combine formatted strings for display
-    String eventInfo = "$formattedDate\n$startTime - $endTime";
-
-    // Return widget with icon and event info
+    // Return a user-friendly widget with icon, date, and time
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          iconAsset,
+          width: 18, // Slightly larger for better UX
+          height: 18,
+          fit: BoxFit.contain,
+        ),
+         // Added spacing for better visual separation
+        Text(
+          formattedDate,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 8, // Updated font size for better readability
+            fontWeight: FontWeight.w400,
+            color: Color(0xff0A4D3C),
+          ),
+        ),
+       // Spacing between date and time
+        Text(
+          postedTime,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 8, // Slightly smaller font size for time
+            fontWeight: FontWeight.w400, // Slightly lighter for distinction
+            color: Color(0xff0A4D3C),
+          ),
+        ),
+      ],
+    );
+  } catch (e) {
+    // Fallback for unexpected errors
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -482,30 +499,15 @@ Widget _buildEventInfoDate(String createdAt, String iconAsset) {
           height: 24,
           fit: BoxFit.contain,
         ),
-        const SizedBox(width: 8),
-        Text(
-          eventInfo,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  } catch (e) {
-    // Handle invalid date
-    return Column(
-      children: [
-        Image.asset(
-          iconAsset,
-          width: 24,
-          height: 24,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(width: 8),
+        const SizedBox(height: 6),
         const Text(
-          "Invalid Date",
-          style: TextStyle(fontSize: 14, color: Colors.red),
+          "Posted recently",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff0A4D3C),
+          ),
         ),
       ],
     );

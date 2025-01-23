@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/const/colors.dart';
+import 'package:sr_health_care/services/post_save_and_unsave_service.dart'; // Import the API service
 
 class ReportPost extends StatefulWidget {
-  const ReportPost({super.key});
+  final int userId;
+  final String userName;
+  final int postId;
+  final String postTitle;
+
+  const ReportPost({
+    super.key,
+    required this.userId,
+    required this.userName,
+    required this.postId,
+    required this.postTitle,
+  });
 
   @override
   State<ReportPost> createState() => ReportPostState();
@@ -14,14 +26,48 @@ class ReportPostState extends State<ReportPost> {
 
   // List of report reasons
   final List<String> _reportReasons = [
-    "I'm Not Interested In The Cretor",
+    "I'm Not Interested In The Creator",
     "I'm Not Interested In The Topic",
     "Have Seen This Post Before",
     "The Post Provides False Or Deceptive Content",
-    "Te Post Contains Threts Or Promotes Violence",
+    "The Post Contains Threats Or Promotes Violence",
     "The Post Contains Explicit Or Sensitive Visuals",
     "Other Reason",
   ];
+
+  // Method to handle report submission
+  Future<void> _submitReport() async {
+    if (selectedOption != -1) {
+      final reason = _reportReasons[selectedOption];
+      final date = DateTime.now().toIso8601String(); // Current timestamp
+
+      final success = await PostSaveAndUnsaveService().reportPost(
+        userId: widget.userId,
+        userName: widget.userName,
+        postId: widget.postId,
+        postTitle: widget.postTitle,
+        reason: reason,
+        date: date,
+        context: context,
+      );
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Report submitted successfully!")),
+        );
+        Navigator.pop(context); // Close the modal on success
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Report submitted successfully!")),
+        );
+                Navigator.pop(context);
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a reason to continue.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +141,6 @@ class ReportPostState extends State<ReportPost> {
               );
             },
           ),
-          // SizedBox(height: 16)
           const Spacer(),
           SizedBox(
             width: double.infinity,
@@ -107,23 +152,7 @@ class ReportPostState extends State<ReportPost> {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              onPressed: () {
-                if (selectedOption != -1) {
-                  Navigator.pop(context);
-                  // Handle submission logic here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Report submitted successfully!"),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please select a reason to continue."),
-                    ),
-                  );
-                }
-              },
+              onPressed: _submitReport,
               child: const Text(
                 "Submit",
                 style: TextStyle(fontSize: 16, color: Colors.white),

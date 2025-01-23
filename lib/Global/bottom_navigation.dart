@@ -6,6 +6,7 @@ import 'package:sr_health_care/Pages/myfeed/myfeed_main.dart';
 import 'package:sr_health_care/Pages/profilePage/setting.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
+import 'package:sr_health_care/trash/unique_home_page.dart';
 
 class BottomNavPage extends StatefulWidget {
   const BottomNavPage({super.key});
@@ -32,10 +33,11 @@ class _BottomNavPageState extends State<BottomNavPage> {
     
     super.initState();
    _pages= [
-    const MainHomePage(),
+    // const MainHomePage(),
+    UniqueHomePage(),
     const SearchPage(),
     MyFeedPage(
-      userID: SharedPreferenceHelper().getUserData()!.id.toString(),
+      userID: SharedPreferenceHelper().getUserData()?.id.toString() ??'',
     ),
      SettingPage(
       onUpdate: () {

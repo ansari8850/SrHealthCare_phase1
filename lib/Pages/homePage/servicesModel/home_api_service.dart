@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:sr_health_care/Pages/homePage/servicesModel/api_response_model.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/filter_home_page_model.dart';
+import 'package:sr_health_care/Pages/homePage/servicesModel/filter_post_type_model.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 
@@ -29,6 +30,8 @@ class PostService {
     String location = '',
     String date = '',
     String status = '',
+   required int currentPage , // New parameter for pagination
+   required int noOfRec , // New parameter for pagination
   }) async {
     try {
       final body = {
@@ -42,8 +45,11 @@ class PostService {
         'location': location,
         'date': date,
         'status': status,
+        'currentpage': currentPage, // Added for pagination
+        'noofrec': noOfRec, // Added for pagination
       };
-
+      print(bearerToken);
+      print('bearerToken');
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -71,17 +77,14 @@ class PostService {
     final tokken = SharedPreferenceHelper().getAccessToken();
     final url =
         Uri.parse('https://backend.srhealthcarecommunity.com/api/post/details');
-        final UserId = SharedPreferenceHelper().getUserData()?.id;
+    final UserId = SharedPreferenceHelper().getUserData()?.id;
     try {
       final response = await http.post(url,
           headers: {
             'Authorization': 'Bearer $tokken',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode({
-            "id": postid,
-            "current_user_id": UserId
-          }));
+          body: jsonEncode({"id": postid, "current_user_id": UserId}));
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         log(response.body);
@@ -95,16 +98,47 @@ class PostService {
     return null;
   }
 
+  Future<(String? error, FilterHomePageModel?)> fetchAllRecords() async {
+    final tokken = SharedPreferenceHelper().getAccessToken();
+    final url = Uri.parse(
+        'https://backend.srhealthcarecommunity.com/api/post/all/records');
 
-Future<(String? error, FilterHomePageModel?)> fetchAllRecords() async {
-  final tokken = SharedPreferenceHelper().getAccessToken();
-  final url = Uri.parse('https://backend.srhealthcarecommunity.com/api/post/all/records');
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $tokken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        log(response.body);
+        final data = FilterHomePageModel.fromJson(jsonResponse);
+        return (null, data);
+      } else {
+        final errorResponse = jsonDecode(response.body);
+        final message = errorResponse['message'] ?? 'Unknown error';
+        log(message);
+        return (message.toString(), null);
+      }
+    } catch (e) {
+      log('Error: $e');
+      return ('$e', null);
+    }
+  }
+
+  Future<List<String>> fetchPostTypeList() async {
+  final token = SharedPreferenceHelper().getAccessToken();
+  final url = Uri.parse(
+      'https://backend.srhealthcarecommunity.com/api/master/post_type_list');
 
   try {
-    final response = await http.get(
+    final response = await http.post(
       url,
       headers: {
-        'Authorization': 'Bearer $tokken',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
@@ -112,18 +146,21 @@ Future<(String? error, FilterHomePageModel?)> fetchAllRecords() async {
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       log(response.body);
-      final data = FilterHomePageModel.fromJson(jsonResponse);
-      return (null, data);
+
+      // Fetch post types from response and return as a list of strings
+      final postTypes = (jsonResponse['post_type_list'] as List)
+          .map((e) => e['name'] as String)
+          .toSet()
+          .toList(); // Remove duplicates if any
+      return postTypes;
     } else {
       final errorResponse = jsonDecode(response.body);
-      final message = errorResponse['message'] ?? 'Unknown error';
-      log(message);
-      return (message.toString(), null);
+      log(errorResponse['message'] ?? 'Unknown error');
     }
   } catch (e) {
-    log('Error: $e');
-    return ('$e', null);
+    log('Error fetching post types: $e');
   }
+  return [];
 }
 
 }

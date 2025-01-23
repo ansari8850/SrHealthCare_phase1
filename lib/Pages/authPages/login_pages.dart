@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sr_health_care/Global/bottom_navigation.dart';
 import 'package:sr_health_care/Pages/authPages/forget_password.dart';
 import 'package:sr_health_care/const/colors.dart';
@@ -21,9 +23,9 @@ class _LoginPagesState extends State<LoginPages> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   // Method to handle login
-
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -77,6 +79,9 @@ class _LoginPagesState extends State<LoginPages> {
       }
     }
   }
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +141,7 @@ class _LoginPagesState extends State<LoginPages> {
                 controller: _emailController,
                 cursorColor: Colors.grey.withOpacity(.3),
                 decoration: InputDecoration(
-                  hintText: 'Enter Mail',
+                  hintText: 'Enter Email',
                   border: InputBorder.none,
                   hintStyle: GoogleFonts.poppins(
                       fontSize: 14,
@@ -237,7 +242,11 @@ class _LoginPagesState extends State<LoginPages> {
                         ),
                 ),
               ),
-            )
+            ),
+            SizedBox(
+              height: 20,
+            ),
+          
           ],
         ),
       ),

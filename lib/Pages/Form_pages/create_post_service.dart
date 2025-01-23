@@ -16,6 +16,7 @@ class CreatePostService {
     String? autodeletedate,
     String? thumbnail,
     String? postType,
+    int? postId,
   }) async {
     final token = SharedPreferenceHelper().getAccessToken();
     final userId = SharedPreferenceHelper().getUserData()?.id;
@@ -39,7 +40,8 @@ class CreatePostService {
             "thumbnail": thumbnail,
             "auto_delete_date": autodeletedate,
             "status": 'Pending',
-            "title" :title
+            "title" :title,
+            "post_id" :postId
           }));
       final jsonResponse = jsonDecode(response.body);
       log(response.body);
@@ -62,8 +64,6 @@ Future<FiledResponseModel?> fethInitialData(
     String type,
   ) async {
     final token = SharedPreferenceHelper().getAccessToken();
-    // final userId = SharedPreferenceHelper().getUserData()?.id;
-    // final username = SharedPreferenceHelper().getUserData()?.name;
     final url = Uri.parse(
  "https://backend.srhealthcarecommunity.com/api/master/list?fy=2024&noofrec=10&currentpage=1&type=$type", 
    );
@@ -75,19 +75,6 @@ Future<FiledResponseModel?> fethInitialData(
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          
-          // body: jsonEncode({
-          //   "user_id": userId,
-          //   "user_name": username,
-          //   "field_id": fieldType,
-          //   "post_type": postType,
-          //   "location": location,
-          //   "date": date,
-          //   "description": description,
-          //   "thumbnail": thumbnail,
-          //   "auto_delete_date": autodeletedate,
-          //   "status": 'Pending'
-          // }),
           );
       final jsonResponse = jsonDecode(response.body);
       log(response.body);

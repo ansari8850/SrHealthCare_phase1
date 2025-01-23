@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +14,7 @@ import 'package:sr_health_care/Pages/myfeed/myfeedDetail.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
 
+// ignore: must_be_immutable
 class MyFeedPage extends StatefulWidget {
   String userID;
   MyFeedPage({super.key, required this.userID});
@@ -48,7 +51,6 @@ class _MyFeedPageState extends State<MyFeedPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchMyFeed();
   }
@@ -104,7 +106,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 setState(() {});
 
                 // Close the dialog
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               },
             ),
             TextButton(
@@ -200,24 +202,37 @@ class _MyFeedPageState extends State<MyFeedPage> {
         itemBuilder: (context, index) {
           final post = rejected[index];
           return GestureDetector(
-            onTap: () {
-              Get.to(MyFeedDetail(id: post.id ?? 0));
+            onTap: () async {
+              final shouldRefresh = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MyFeedDetail(id: rejected[index].id ?? 0),
+                ),
+              );
+
+              if (shouldRefresh == true) {
+                // Refresh the feed
+                approved.clear();
+                pending.clear();
+                rejected.clear();
+                fetchMyFeed();
+              }
             },
             child: _buildFeedCard(
-              title: post.title ?? '',
-              description: post.description ?? '',
-              tag1: post.postType?.fieldName ?? '',
-              tag2: post.postType?.name ?? '',
-              dateAgo: post.createdAt.toString(),
-              comments: "8 Comments",
-              imagePath: post.thumbnail ?? '',
-              showShareButton: false,
-              postId: post.id ?? 0,
-              onTap: () {
-                Share.share('This is the rejected post ${post.thumbnail}');
-              },
-              status: post.status??''
-            ),
+                title: post.title ?? '',
+                description: post.description ?? '',
+                tag1: post.postType?.fieldName ?? '',
+                tag2: post.postType?.name ?? '',
+                dateAgo: post.createdAt.toString(),
+                comments: "8 Comments",
+                imagePath: post.thumbnail ?? '',
+                showShareButton: false,
+                postId: post.id ?? 0,
+                onTap: () {
+                  Share.share('This is the rejected post ${post.thumbnail}');
+                },
+                status: post.status ?? ''),
           );
         },
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -233,24 +248,38 @@ class _MyFeedPageState extends State<MyFeedPage> {
         itemBuilder: (context, index) {
           final post = approved[index];
           return GestureDetector(
-            onTap: () {
-              Get.to(MyFeedDetail(id: post.id ?? 0));
+            onTap: () async {
+              final shouldRefresh = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MyFeedDetail(id: approved[index].id ?? 0),
+                ),
+              );
+              // log(approved);
+
+              if (shouldRefresh == true) {
+                // Refresh the feed
+                approved.clear();
+                pending.clear();
+                rejected.clear();
+                fetchMyFeed();
+              }
             },
             child: _buildFeedCard(
-              title: post.title ?? '',
-              description: post.description ?? '',
-              tag1: post.postType?.fieldName ?? '',
-              tag2: post.postType?.name ?? '',
-              dateAgo: post.createdAt.toString(),
-              comments: "8 Comments",
-              imagePath: post.thumbnail ?? '',
-              showShareButton: false,
-              postId: post.id ?? 0,
-              onTap: () {
-                Share.share('This is the rejected post ${post.thumbnail}');
-              },
-              status: post.status??''
-            ),
+                title: post.title ?? '',
+                description: post.description ?? '',
+                tag1: post.postType?.fieldName ?? '',
+                tag2: post.postType?.name ?? '',
+                dateAgo: post.createdAt.toString(),
+                comments: "8 Comments",
+                imagePath: post.thumbnail ?? '',
+                showShareButton: false,
+                postId: post.id ?? 0,
+                onTap: () {
+                  Share.share('This is the rejected post ${post.thumbnail}');
+                },
+                status: post.status ?? ''),
           );
         },
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -266,24 +295,37 @@ class _MyFeedPageState extends State<MyFeedPage> {
         itemBuilder: (context, index) {
           final post = pending[index];
           return GestureDetector(
-            onTap: () {
-              Get.to(MyFeedDetail(id: post.id ?? 0));
+            onTap: () async {
+              final shouldRefresh = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MyFeedDetail(id: pending[index].id ?? 0),
+                ),
+              );
+
+              if (shouldRefresh == true) {
+                // Refresh the feed
+                approved.clear();
+                pending.clear();
+                rejected.clear();
+                fetchMyFeed();
+              }
             },
             child: _buildFeedCard(
-              title: post.title ?? '',
-              description: post.description ?? '',
-              tag1: post.postType?.fieldName ?? '',
-              tag2: post.postType?.name ?? '',
-              dateAgo: post.createdAt.toString(),
-              comments: "8 Comments",
-              imagePath: post.thumbnail ?? '',
-              showShareButton: false,
-              postId: post.id ?? 0,
-              onTap: () {
-                Share.share('This is the rejected post ${post.thumbnail}');
-              },
-              status: post.status??''
-            ),
+                title: post.title ?? '',
+                description: post.description ?? '',
+                tag1: post.user?.fieldName ?? '',
+                tag2: post.postType?.name ?? '',
+                dateAgo: post.createdAt.toString(),
+                comments: "8 Comments",
+                imagePath: post.thumbnail ?? '',
+                showShareButton: false,
+                postId: post.id ?? 0,
+                onTap: () {
+                  Share.share('This is the rejected post ${post.thumbnail}');
+                },
+                status: post.status ?? ''),
           );
         },
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -292,9 +334,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
   }
 
   // Tabs
-  Widget _buildTab(String text, {required bool isSelected})
-  
-   {
+  Widget _buildTab(String text, {required bool isSelected}) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       height: 47,
@@ -361,43 +401,42 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 ),
                 Column(
                   children: [
-                    if(status =="Approved")
-                    GestureDetector(
-                      onTap: onTap,
-                      child: CircleAvatar(
-                        radius: 17,
-                        backgroundColor: Color(0xffE8F8F4),
-                        child: Image.asset(
-                          'assets/homepage/share.png',
-                          height: 20,
-                          width: 20,
-                          color: Colors.grey,
+                    if (status == "Approved")
+                      GestureDetector(
+                        onTap: onTap,
+                        child: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Color(0xffE8F8F4),
+                          child: Image.asset(
+                            'assets/homepage/share.png',
+                            height: 16,
+                            width: 16,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
                     SizedBox(
-                      height: 10,
+                      height: 8,
                     ),
-                    if(status =="Approved" || status =='Rejected')
-                    GestureDetector(
-                      onTap: () {
-                        _showMyDialog(postId);
-                        setState(() {});
-                      },
-                      child: CircleAvatar(
-                        radius: 17,
-                        backgroundColor: Color(0xffE8F8F4),
-                        child: Image.asset(
-                          'assets/homepage/delete.png',
-                          height: 20,
-                          width: 20,
-                          color: Colors.red,
+                    if (status == "Approved" || status == 'Rejected')
+                      GestureDetector(
+                        onTap: () {
+                          _showMyDialog(postId);
+                          setState(() {});
+                        },
+                        child: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Color(0xffE8F8F4),
+                          child: Image.asset(
+                            'assets/homepage/delete.png',
+                            height: 16,
+                            width: 16,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
-              
               ],
             ),
             const SizedBox(height: 10),
@@ -414,61 +453,17 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 Spacer(),
                 Image.asset(
                   'assets/myfeed/clock.png',
-                  height: 14,
+                  height: 12,
                 ),
                 const SizedBox(width: 5),
                 TimeAgoCustomWidget(
                   createdAt: dateAgo,
-                  size: 12,
+                  size: 10,
                 )
               ],
             ),
 
-            // Divider and Action Buttons
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Row(
-            //       children: [
-            //         Image.asset('assets/myfeed/comment.png', height: 15),
-            //         const SizedBox(width: 5),
-            //         Text(comments,
-            //             style: GoogleFonts.poppins(
-            //                 fontSize: 12, color: Colors.grey)),
-            //       ],
-            //     ),
-            //     Row(
-            //       children: [
-            //         Image.asset('assets/myfeed/clock.png', height: 15),
-            //         const SizedBox(width: 5),
-            //         TimeAgoCustomWidget(createdAt: dateAgo),
-            //       ],
-            //     ),
-            //   ],
-            // ),
-            // const SizedBox(height: 20),
-
-            // // Buttons
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: _buildActionButton(
-            //         text: 'See Details',
-            //         color: buttonColor,
-            //         onPressed: () => print('See Details Clicked'),
-            //       ),
-            //     ),
-            //     const SizedBox(width: 10),
-            //     if (!showShareButton)
-            //       Expanded(
-            //         child: _buildActionButton(
-            //           text: 'Delete',
-            //           color: const Color(0xffDA4019),
-            //           onPressed: () => print('Delete Clicked'),
-            //         ),
-            //       ),
-            //   ],
-            // ),
+           
           ],
         ),
       ),
@@ -478,7 +473,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
   // Tags
   Widget _buildTag(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: buttonColor.withOpacity(0.2),
         borderRadius: BorderRadius.circular(25),
@@ -486,7 +481,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
       child: Text(
         text,
         style: GoogleFonts.poppins(
-          fontSize: 11,
+          fontSize: 10,
           color: blackColor,
           fontWeight: FontWeight.w400,
         ),
@@ -494,27 +489,5 @@ class _MyFeedPageState extends State<MyFeedPage> {
     );
   }
 
-  // Action Buttons
-  Widget _buildActionButton({
-    required String text,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
+
 }

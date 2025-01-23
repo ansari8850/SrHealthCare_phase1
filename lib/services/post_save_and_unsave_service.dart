@@ -139,4 +139,61 @@ class PostSaveAndUnsaveService {
     }
     return false;
   }
+
+
+/// Report Post Method
+Future<bool> reportPost({
+  required int userId,
+  required String userName,
+  required int postId,
+  required String postTitle,
+  required String reason,
+  required String date,
+  required BuildContext context,
+}) async {
+  final token = SharedPreferenceHelper().getAccessToken();
+  final url = Uri.parse('${baseUrl}post/reported');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "user_id": userId,
+        "user_name": userName,
+        "post_id": postId,
+        "post_title": postTitle,
+        "reason": reason,
+        "date": date,
+        "status": "Reported",
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['success'] == true) {
+        log('Post reported successfully: ${jsonResponse['message']}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(jsonResponse['message'])),
+        );
+        return true;
+      } else {
+        log('Failed to report post: ${response.body}');
+      }
+    } else {
+      log('Error while reporting post: ${response.statusCode}');
+    }
+  } catch (e) {
+    log("Error while reporting post: $e");
+  }
+
+  return false;
+}
+
+
+
 }

@@ -80,7 +80,7 @@ class _FollowersPageState extends State<FollowersPage> {
             "My Followers",
             style: GoogleFonts.poppins(
               color: const Color(0xff3F3F3F),
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -148,8 +148,8 @@ class _FollowersPageState extends State<FollowersPage> {
 
               if (searchQuery != null &&
                   searchQuery!.isNotEmpty &&
-                  user?.name != null &&
-                  !user!.name!.toLowerCase().contains(searchQuery!)) {
+                  user?.displayName != null &&
+                  !user!.displayName!.toLowerCase().contains(searchQuery!)) {
                 return const SizedBox.shrink();
               }
 
@@ -157,11 +157,25 @@ class _FollowersPageState extends State<FollowersPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
                 child: ListTile(
-                  onTap: (){
-                    Get.to(
-                  FollowerProfile(postUsedId: (user?.id ?? 0 ).toString(),)
+                  onTap: () async{
+                  //   Get.to(
+                  // FollowerProfile(postUsedId: (user?.id ?? 0 ).toString(),isAboveFollowing:true,)
 
-                    );
+                  //   );
+                  final shouldReferesh = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      FollowerProfile(postUsedId: (user?.id ?? 0 ).toString(),isAboveFollowing:true,)
+                ),
+              );
+              if(shouldReferesh ==true)
+              {followers.clear();
+              following.clear();
+              fetchFollowers();
+              fetchFollowing();}
+
+              // l 
                   },
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
@@ -182,7 +196,7 @@ class _FollowersPageState extends State<FollowersPage> {
                     user?.displayName ?? '',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
                   subtitle: Column(
@@ -192,10 +206,10 @@ class _FollowersPageState extends State<FollowersPage> {
                         user?.department ?? '',
                         style: GoogleFonts.poppins(
                           color: Colors.grey[700],
-                          fontSize: 14,
+                          fontSize: 10,
                         ),
                       ),
-                      TimeAgoCustomWidget(createdAt: user!.updatedAt.toString() , size: 12,)
+                      TimeAgoCustomWidget(createdAt: user!.updatedAt.toString() , size: 10,)
                     ],
                   ),
                 ),
@@ -206,13 +220,14 @@ class _FollowersPageState extends State<FollowersPage> {
       ],
     );
   }
+
  Widget buildListFollowers(List<Follower?> dataList) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
           child: Card(
-            elevation: 2,
+            elevation: 1,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
@@ -220,7 +235,7 @@ class _FollowersPageState extends State<FollowersPage> {
             child: TextField(
               onChanged: (value) {
                 setState(() {
-                  searchQuery = value.toLowerCase();
+                  searchQuery = value.trim().toLowerCase();
                 });
               },
               decoration: InputDecoration(
@@ -246,8 +261,8 @@ class _FollowersPageState extends State<FollowersPage> {
 
               if (searchQuery != null &&
                   searchQuery!.isNotEmpty &&
-                  user?.name != null &&
-                  !user!.name!.toLowerCase().contains(searchQuery!)) {
+                  user?.displayName != null &&
+                  !user!.displayName!.toLowerCase().contains(searchQuery!)) {
                 return const SizedBox.shrink();
               }
 
@@ -280,7 +295,7 @@ class _FollowersPageState extends State<FollowersPage> {
                     user?.displayName ?? '',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
                   subtitle: Column(
@@ -290,10 +305,10 @@ class _FollowersPageState extends State<FollowersPage> {
                         user?.department ?? '',
                         style: GoogleFonts.poppins(
                           color: Colors.grey[700],
-                          fontSize: 14,
+                          fontSize: 10,
                         ),
                       ),
-                     TimeAgoCustomWidget(createdAt: user!.updatedAt.toString() , size: 12,)
+                     TimeAgoCustomWidget(createdAt: user!.updatedAt.toString() , size: 10,)
                     ],
                   ),
                 ),

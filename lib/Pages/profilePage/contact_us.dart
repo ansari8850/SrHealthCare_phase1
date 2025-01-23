@@ -78,48 +78,45 @@ class _ContactUsState extends State<ContactUs> {
             const SizedBox(height: 60),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _launchEmail('support@srhealthcarecommunity.com'),
-                      child: Column(
-                        children: [
-                          CustomText(
-                            text: 'Email:',
-                            size: 14,
-                            color: blackColor,
-                            weight: FontWeight.w400,
-                          ),
-                          CustomText(
-                            text: 'support@srhealthcarecommunity.com',
-                            size: 14,
-                            color: buttonColor,
-                            weight: FontWeight.w400,
-                          ),
-                        ],
-                      ),
+                  GestureDetector(
+                    onTap: () => _launchEmail('support@srhealthcarecommunity.com'),
+                    child: Column(
+                      children: [
+                        CustomText(
+                          text: 'Email:',
+                          size: 14,
+                          color: blackColor,
+                          weight: FontWeight.w500,
+                        ),
+                        CustomText(
+                          text: 'support@srhealthcarecommunity.com',
+                          size: 12,
+                          color: buttonColor,
+                          weight: FontWeight.w400,
+                        ),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _launchPhone('+919447008356'),
-                      child: Column(
-                        children: [
-                          CustomText(
-                            text: 'Phone Number:',
-                            size: 14,
-                            color: blackColor,
-                            weight: FontWeight.w400,
-                          ),
-                          CustomText(
-                            text: '+91 94470 08356',
-                            size: 14,
-                            color: buttonColor,
-                            weight: FontWeight.w400,
-                          ),
-                        ],
-                      ),
+                  SizedBox(height: 20,),
+                  GestureDetector(
+                    onTap: () => _launchPhone('+919447008356'),
+                    child: Column(
+                      children: [
+                        CustomText(
+                          text: 'Phone Number:',
+                          size: 14,
+                          color: blackColor,
+                          weight: FontWeight.w500,
+                        ),
+                        CustomText(
+                          text: '+91 94470 08356',
+                          size: 12,
+                          color: buttonColor,
+                          weight: FontWeight.w400,
+                        ),
+                      ],
                     ),
                   ),
                 ],

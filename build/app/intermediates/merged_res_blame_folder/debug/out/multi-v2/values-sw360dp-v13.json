@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-42:/values-sw360dp-v13/values-sw360dp-v13.xml",
+            "outputFile": "com.codesquarry.srhealthcare.app-mergeDebugResources-45:/values-sw360dp-v13/values-sw360dp-v13.xml",
             "map": [
                 {
                     "source": "C:\\Users\\91885\\.gradle\\caches\\transforms-3\\3423ad43eb5d78e4c674b032a330d643\\transformed\\preference-1.2.1\\res\\values-sw360dp-v13\\values-sw360dp-v13.xml",

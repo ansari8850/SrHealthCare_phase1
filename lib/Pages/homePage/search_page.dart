@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/expandable_text.dart';
 import 'package:sr_health_care/CustomWidget/modal_bottom_sheet_home.dart';
+import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
+import 'package:sr_health_care/CustomWidget/time_ago.dart';
 import 'package:sr_health_care/Pages/homePage/post_detail_page.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/search_api.dart';
@@ -16,6 +18,7 @@ import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
 import 'package:sr_health_care/services/post_save_and_unsave_service.dart';
+import 'package:sr_health_care/services/share_plus_service.dart';
 
 import 'servicesModel/home_api_service.dart';
 
@@ -61,7 +64,8 @@ class _SearchPageState extends State<SearchPage> {
       return;
     }
     // _searchHistory.add(SearchModel(searchQuery: search));
-    final (error, data) = await PostService().fetchPosts(search: search);
+    final (error, data) = await PostService()
+        .fetchPosts(search: search, currentPage: 1, noOfRec: 10);
     if (error?.isNotEmpty == true || data == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error ?? 'Something went wrong')),
@@ -152,7 +156,7 @@ class _SearchPageState extends State<SearchPage> {
                           size: 18, color: Colors.white),
                       const SizedBox(width: 5),
                       Text(
-                        "${SharedPreferenceHelper().getUserData()?.street1} ${SharedPreferenceHelper().getUserData()?.street2}",
+                        "${SharedPreferenceHelper().getUserData()?.address ?? ''}",
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -182,41 +186,41 @@ class _SearchPageState extends State<SearchPage> {
                                 if (value.length > 3)
                                   _searchHistory
                                       .add(SearchModel(searchQuery: value));
-                                      setState(() {
-                                        
-                                      });
+                                setState(() {});
                               });
-                              
                             },
                             decoration: InputDecoration(
                               hintStyle: GoogleFonts.poppins(
-                                  fontSize: 14, fontWeight: FontWeight.w400),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey),
                               hintText: "Search Posts, Categories...",
                               prefixIcon:
                                   const Icon(Icons.search, color: Colors.grey),
                               border: InputBorder.none,
-                              contentPadding: const EdgeInsets.all(12),
+                              contentPadding:
+                                  const EdgeInsets.only(bottom: 5, top: 5),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (_) => const SortFilterBottomSheet());
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: whiteColor,
-                          child: Image.asset(
-                            'assets/homepage/filter.png',
-                            height: 18,
-                          ),
-                        ),
-                      )
+                      // const SizedBox(
+                      //   width: 10,
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     showModalBottomSheet(
+                      //         context: context,
+                      //         builder: (_) => const SortFilterBottomSheet());
+                      //   },
+                      //   child: CircleAvatar(
+                      //     backgroundColor: whiteColor,
+                      //     child: Image.asset(
+                      //       'assets/homepage/filter.png',
+                      //       height: 18,
+                      //     ),
+                      //   ),
+                      // )
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -238,7 +242,7 @@ class _SearchPageState extends State<SearchPage> {
                           children: [
                             const CustomText(
                                 text: 'Previous searches',
-                                size: 18,
+                                size: 14,
                                 color: Colors.black,
                                 weight: FontWeight.w500),
                             GestureDetector(
@@ -252,7 +256,7 @@ class _SearchPageState extends State<SearchPage> {
                                 'Clear all',
                                 style: GoogleFonts.poppins(
                                     color: const Color(0xff6656E0),
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                     decoration: TextDecoration.underline),
                               ),
@@ -350,11 +354,13 @@ class _SearchPageState extends State<SearchPage> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      radius: 30,
+                                      radius: 26,
                                       child: AppCacheNetworkImage(
-                                          borderRadius: 50,
-                                          imageUrl:
-                                              post.user?.photo?.url ?? ''),
+                                        borderRadius: 50,
+                                        imageUrl: post.user?.photo?.url ?? '',
+                                        height: 100,
+                                        width: Get.width,
+                                      ),
                                     ),
                                     const SizedBox(width: 10),
                                     Expanded(
@@ -365,20 +371,36 @@ class _SearchPageState extends State<SearchPage> {
                                           Text(
                                             post.user?.name ?? '',
                                             style: GoogleFonts.poppins(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                           Text(
                                             post.user?.department ?? '',
                                             style: GoogleFonts.poppins(
-                                              fontSize: 12,
+                                              fontSize: 10,
                                               color: Colors.grey.shade600,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/homepage/clock.png',
+                                          height: 12,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        TimeAgoCustomWidget(
+                                          createdAt:
+                                              post?.createdAt.toString() ?? ' ',
+                                          size: 10,
+                                        )
+                                      ],
+                                    )
                                   ],
                                 ),
                                 const SizedBox(height: 10),
@@ -401,7 +423,8 @@ class _SearchPageState extends State<SearchPage> {
                                 const SizedBox(height: 10),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
-                                  child: _buildChip(post.fieldName ?? ''),
+                                  child: _buildChip(
+                                      post.postType?.fieldName ?? ''),
                                 ),
                                 const SizedBox(height: 10),
                                 Divider(
@@ -411,39 +434,29 @@ class _SearchPageState extends State<SearchPage> {
                                 Row(
                                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          PostSaveAndUnsaveService().savePost(
-                                              postId: post.id.toString(),
-                                              context: context);
-                                        },
-                                        child: _buildAction(
-                                            'assets/homepage/save.png',
-                                            "Save")),
+                                    Obx(() {
+                                      // Use the isPostSaved method to check if the post is saved
+                                      bool isSaved = savepostController
+                                          .isPostSaved(post.id ?? -1);
+
+                                      return SaveButton(
+                                        postId: post.id ?? -1,
+                                        isSaved: isSaved,
+                                      );
+                                    }),
+                                    // SaveButton(isSaved:  post.isSaved  ?? true, postId: post.id??0),
                                     const SizedBox(
                                       width: 15,
                                     ),
-                                    _buildAction(
-                                        'assets/homepage/share.png', "Share"),
-                                    const Spacer(),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/homepage/clock.png',
-                                          height: 15,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          '1 Hr Ago',
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.grey),
-                                        )
-                                      ],
-                                    )
+                                    InkWell(
+                                      onTap: (){
+                                        ShareService().shareText('text');
+                                      },
+                                      child: _buildAction(
+                                        
+                                          'assets/homepage/share.png', "Share"),
+                                    ),
+                                    // const Spacer(),
                                   ],
                                 ),
                               ],
@@ -480,7 +493,7 @@ class _SearchPageState extends State<SearchPage> {
           Text(
             title,
             style: GoogleFonts.poppins(
-              fontSize: 11,
+              fontSize: 10,
               color: Colors.black,
             ),
           ),
@@ -503,7 +516,7 @@ class _SearchPageState extends State<SearchPage> {
         Text(
           label,
           style: GoogleFonts.poppins(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.w400,
               color: const Color(0xff6656E0)),
         ),

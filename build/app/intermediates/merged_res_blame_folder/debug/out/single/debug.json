@@ -1,30 +1,30 @@
 [
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-mdpi_launcher_icon.png.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-mdpi/launcher_icon.png"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-xhdpi_launcher_icon.png.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-xhdpi/launcher_icon.png"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-xhdpi_launcher_icon.png.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-xhdpi/launcher_icon.png"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/drawable-v21_launch_background.xml.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/drawable-v21/launch_background.xml"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-hdpi_launcher_icon.png.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-hdpi/launcher_icon.png"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-hdpi_launcher_icon.png.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-hdpi/launcher_icon.png"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/drawable-v21_launch_background.xml.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/drawable-v21/launch_background.xml"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-anydpi-v26_launcher_icon.xml.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-anydpi-v26/launcher_icon.xml"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-xxxhdpi_launcher_icon.png.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-xxxhdpi/launcher_icon.png"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-xxxhdpi_launcher_icon.png.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-xxxhdpi/launcher_icon.png"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-anydpi-v26_launcher_icon.xml.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-anydpi-v26/launcher_icon.xml"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-mdpi_launcher_icon.png.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-mdpi/launcher_icon.png"
     },
     {
-        "merged": "com.codesquarry.srhealthcare.app-merged_res-44:/mipmap-xxhdpi_launcher_icon.png.flat",
-        "source": "com.codesquarry.srhealthcare.app-main-39:/mipmap-xxhdpi/launcher_icon.png"
+        "merged": "com.codesquarry.srhealthcare.app-merged_res-47:/mipmap-xxhdpi_launcher_icon.png.flat",
+        "source": "com.codesquarry.srhealthcare.app-main-42:/mipmap-xxhdpi/launcher_icon.png"
     }
 ]

@@ -141,13 +141,13 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
           children: [
             _sectionHeader('Time', 'assets/filter/greyc.png'),
             _buildOptionRow(['Newest First', 'Oldest First'], 0),
-            const SizedBox(height: 20),
+            const SizedBox(height: 6),
             _sectionHeader('Location', 'assets/filter/greyll.png'),
             _buildOptionRow(['Closest', 'Farthest'], 1),
-            const SizedBox(height: 20),
+            const SizedBox(height: 6),
             _sectionHeader('Popularity', 'assets/filter/greyl.png'),
             _buildOptionRow(['Most Shared', 'Most Commented'], 2),
-            const SizedBox(height: 20),
+            const SizedBox(height: 6),
             _sectionHeader('Date', 'assets/filter/greycc.png'),
             _buildOptionRow(['Today', 'Custom'], 3),
           ],
@@ -193,7 +193,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                           ? Colors.white
                           : Colors.black87,
                       fontWeight: FontWeight.w400,
-                      fontSize: 12),
+                      fontSize: 10),
                 ),
               ),
             ),
@@ -211,15 +211,15 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
         children: [
           Image.asset(
             asset,
-            height: 20,
+            height: 16,
           ),
           const SizedBox(
-            width: 10,
+            width: 8,
           ),
           Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
               color: Colors.black87,
             ),
@@ -235,12 +235,12 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
         // Left Side Navigation
         Container(
           padding: const EdgeInsets.only(left: 5),
-          width: 110,
+          width: 120,
           color: buttonColor.withOpacity(.1),
           child: ListView.builder(
             itemCount: _filterCategories.length,
             itemBuilder: (context, index) {
-              return GestureDetector(
+              return InkWell(
                 onTap: () {
                   setState(() {
                     _selectedFilterCategory = index;
@@ -257,8 +257,8 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                           color: _selectedFilterCategory == index
                               ? buttonColor
                               : Colors.black87,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12,
                         ),
                       ),
                       const Spacer(),
@@ -294,7 +294,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                     title: Text(
                       option,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w400,
                         color: Colors.black87,
                       ),
@@ -336,7 +336,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
               ),
               child: Text(
                 'Reset',
-                style: TextStyle(color: buttonColor),
+                style: GoogleFonts.poppins(color: buttonColor),
               ),
             ),
           ),
@@ -354,11 +354,11 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Padding(
+              child:  Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   'Apply',
-                  style: TextStyle(color: Colors.white),
+                  style: GoogleFonts.poppins(color: Colors.white),
                 ),
               ),
             ),

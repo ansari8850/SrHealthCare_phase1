@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
@@ -60,22 +58,30 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: whiteColor,
         elevation: 0,
-        title: CustomText(text: 'My Profile', size: 20, color: blackColor, weight: FontWeight.w500),
+        title: CustomText(
+            text: 'My Profile',
+            size: 20,
+            color: blackColor,
+            weight: FontWeight.w500),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: GestureDetector(
-              onTap: (){
-                Get.to(ProfileEdit());
-              },
-              child: Icon(Icons.edit , color:buttonColor ,)),
+                onTap: () {
+                  Get.to(ProfileEdit());
+                },
+                child: Icon(
+                  Icons.edit,
+                  color: buttonColor,
+                )),
           )
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Card(
               margin: EdgeInsets.all(10),
               color: whiteColor,
@@ -87,10 +93,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: AppCacheNetworkImage(
                         imageUrl: _userProfile?.photo?.url ?? '',
                         borderRadius: 50,
+                        height: 100,
+                        width: Get.width,
                       )),
-                      SizedBox(height: 8,),
+                  SizedBox(
+                    height: 8,
+                  ),
                   CustomText(
-                      text: "${_userProfile?.name ?? ''} ${_userProfile?.lastName}",
+                      text:
+                          "${_userProfile?.name ?? ''} ${_userProfile?.lastName}",
                       size: 22,
                       color: blackColor,
                       weight: FontWeight.w500),
@@ -99,10 +110,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       size: 12,
                       color: Colors.grey,
                       weight: FontWeight.w400),
-                                      // SizedBox(height: 10,),
-          
+                  // SizedBox(height: 10,),
+
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20 , vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -112,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.grey,
                             weight: FontWeight.w400),
                         CustomText(
-                            text: "+91 ${_userProfile?.mobileNo ??''}",
+                            text: "+91 ${_userProfile?.mobileNo ?? ''}",
                             size: 12,
                             color: blackColor,
                             weight: FontWeight.w400)
@@ -120,9 +132,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   // SizedBox(height: 10,),
-                   Padding(
-                     padding: const EdgeInsets.only(left: 20 , bottom: 10 , right: 20),
-                     child: Row(
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, bottom: 10, right: 20),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
@@ -131,193 +144,54 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.grey,
                             weight: FontWeight.w400),
                         CustomText(
-                            text: " ${_userProfile?.displayName ??''}",
+                            text: " ${_userProfile?.displayName ?? ''}",
                             size: 12,
                             color: blackColor,
                             weight: FontWeight.w400)
                       ],
-                                     ),
-                   )
+                    ),
+                  )
                 ],
               ),
             ),
             SizedBox(
               height: 10,
             ),
-            CustomText(text: 'Bio', size: 14, color: blackColor, weight: FontWeight.w500),
-            CustomText(text: _userProfile?.bio ??'', size: 12, color: Colors.grey, weight: FontWeight.w400) , 
-            SizedBox(height: 20,),
-                        CustomText(text: 'Saved Address', size: 14, color: blackColor, weight: FontWeight.w500),
-                                    CustomText(text: '${_userProfile?.street1} ${_userProfile?.street2} ${_userProfile?.zipCode}   ', size: 12, color: Colors.grey, weight: FontWeight.w400),
-
-
-
-            // Stack(
-            //   clipBehavior: Clip.none,
-            //   children: [
-            //     Container(
-            //       decoration: const BoxDecoration(),
-            //       child: Image.asset(
-            //         'assets/myfeed/profile.png',
-            //         height: 200,
-            //         fit: BoxFit.fill,
-            //       ),
-            //     ),
-            //     Positioned(
-            //         // width: Get.width,
-            //         top: 50,
-            //         left: 20,
-            //         child: Row(
-            //           // mainAxisSize: MainAxisSize.min,
-            //           children: [
-            //             GestureDetector(
-            //               onTap: () {
-            //                 Navigator.pop(context);
-            //               },
-            //               child: CircleAvatar(
-            //                 backgroundColor: Colors.white.withOpacity(.2),
-            //                 child: Icon(
-            //                   Icons.arrow_back,
-            //                   color: whiteColor.withOpacity(.8),
-            //                 ),
-            //               ),
-            //             ),
-            //             const SizedBox(
-            //               width: 10,
-            //             ),
-            //             CustomText(
-            //                 text: 'My Profile',
-            //                 size: 20,
-            //                 color: whiteColor,
-            //                 weight: FontWeight.w500)
-            //           ],
-            //         )),
-            //     Positioned(
-            //       bottom: -3,
-            //       left: 0,
-            //       right: 0,
-            //       child: Container(
-            //         height: 10,
-            //         alignment: Alignment.bottomCenter,
-            //         decoration: const BoxDecoration(
-            //             color: Colors.white,
-            //             borderRadius: BorderRadius.only(
-            //                 topLeft: Radius.circular(100),
-            //                 topRight: Radius.circular(100))),
-            //         padding: const EdgeInsets.symmetric(horizontal: 30),
-            //       ),
-            //     ),
-            //     Positioned(
-            //         left: 10,
-            //         bottom: -40,
-            //         child: CircleAvatar(
-            //           backgroundColor: Colors.black,
-            //           radius: 50,
-            //           // backgroundImage: AssetImage('assets/homepage/dr1.jpg'),
-            //           child: _image != null
-            //               ? ClipRRect(
-            //                   borderRadius: BorderRadius.circular(50),
-            //                   child: Image.file(
-            //                     _image!,
-            //                     fit: BoxFit.cover,
-            //                     height: 100,
-            //                     width: 100,
-            //                   ))
-            //               : CircleAvatar(
-            //                 radius: 51,
-            //                 backgroundColor: buttonColor,
-            //                 child: CircleAvatar(
-            //                   radius: 49,
-            //                   // backgroundColor: buttonColor,
-            //                   child: AppCacheNetworkImage(
-            //                       imageUrl: _userProfile?.photo?.url ?? "",
-            //                       fit: BoxFit.cover,
-            //                       borderRadius: 50,
-            //                     ),
-            //                 ),
-            //               ),
-            //         )),
-            //     Positioned(
-            //       bottom: -30,
-            //       left: MediaQuery.of(context).size.width / 2 - 70,
-            //       child: ElevatedButton(
-            //         style: const ButtonStyle(
-            //             elevation: WidgetStatePropertyAll(0),
-            //             backgroundColor:
-            //                 WidgetStatePropertyAll(Colors.transparent)),
-            //         onPressed: () {
-            //           print('object');
-            //           showCustomBottomSheet(context, (image) {
-            //             _image = image;
-            //             setState(() {});
-            //           });
-            //         },
-            //         child: Text(
-            //           'CHANGE IMAGE',
-            //           style: GoogleFonts.poppins(
-            //             fontSize: 12,
-            //             fontWeight: FontWeight.w400,
-            //             color: Colors
-            //                 .blueAccent, // Use buttonColor or your custom color
-            //             decoration: TextDecoration.underline,
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-          
-            // const SizedBox(
-            //   height: 40,
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-            //   child: Column(
-            //     children: [
-            //       _buildTextFiledProfile(
-            //           'Full Name', _userProfile?.name ?? '', _fullNameController),
-            //       const SizedBox(
-            //         height: 10,
-            //       ),
-            //       _buildTextFiledProfile(
-            //           'Email', _userProfile?.email ?? '', _emailController),
-            //       const SizedBox(
-            //         height: 10,
-            //       ),
-            //       _buildTextFiledProfile('Mobile Number',
-            //           _userProfile?.mobileNo ?? '', _mobileController),
-            //     ],
-            //   ),
-            // )
-          ]),
-        ),
-      ),
-      // bottomNavigationBar: InkWell(
-      //   splashColor: Colors.transparent,
-      //   onTap: () {
-      //     UserProfileApiService().updateProfile(
-      //         image: _image,
-      //         email: _emailController.text,
-      //         name: _fullNameController.text,
-      //         mobileNumber: _mobileController.text);
-      //   },
-      //   child: Container(
-      //     margin: const EdgeInsets.all(10),
-      //     height: 50,
-      //     // width: Get.width / 2,
-      //     // color: Colors.yellow,
-      //     decoration: BoxDecoration(
-      //         color: buttonColor, borderRadius: BorderRadius.circular(15)),
-      //     child: Center(
-      //       child: CustomText(
-      //           text: 'Update Now',
-      //           size: 16,
-      //           color: whiteColor,
-      //           weight: FontWeight.w500),
-      //     ),
-      //   ),
-      // ),
-    
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                      text: 'Bio',
+                      size: 14,
+                      color: blackColor,
+                      weight: FontWeight.w500),
+                  CustomText(
+                      text: _userProfile?.bio ?? '',
+                      size: 12,
+                      color: Colors.grey,
+                      weight: FontWeight.w400),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CustomText(
+                      text: 'Saved Address',
+                      size: 14,
+                      color: blackColor,
+                      weight: FontWeight.w500),
+                  CustomText(
+                      text: 
+                      // _userProfile?.address??'',
+                          '${_userProfile?.street1} ${_userProfile?.street2} ${_userProfile?.zipCode}   ',
+                      size: 12,
+                      color: Colors.grey,
+                      weight: FontWeight.w400),
+                ],
+              ),
+            ),
+              ])))
     );
   }
 
@@ -352,7 +226,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-
 }
 
 // Function to show the modal bottom sheet

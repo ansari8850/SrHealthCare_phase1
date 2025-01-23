@@ -1,0 +1,94 @@
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sr_health_care/Pages/Form_pages/create_post_service.dart';
+import 'package:sr_health_care/Pages/Form_pages/field_response_model.dart';
+import 'package:sr_health_care/const/colors.dart';
+
+class DropdownExample extends StatefulWidget {
+  final Function(String?) onLocationSelected; // Callback to update parent state
+
+  const DropdownExample({Key? key, required this.onLocationSelected}) : super(key: key);
+
+  @override
+  _DropdownExampleState createState() => _DropdownExampleState();
+}
+
+class _DropdownExampleState extends State<DropdownExample> {
+  List<FieldTypeModel> dropdownItems = [];
+  List<String> allDropdownItems = [];
+  String? selectedItem = "All"; // Default selection
+  final CreatePostService apiService = CreatePostService();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownData();
+  }
+
+  Future<void> fetchDropdownData() async {
+    final response = await apiService.fethInitialData('location');
+    if (response != null && response.masterList != null) {
+      setState(() {
+        dropdownItems = response.masterList
+                ?.where((item) => item.status == 'Active')
+                .toSet()
+                .toList() ??
+            [];
+
+        // Create a list of names with the static "All" value
+        allDropdownItems = ["All", ...dropdownItems.map((item) => item.name ?? "").toList()];
+        selectedItem = "All"; // Ensure "All" is selected initially
+        widget.onLocationSelected(selectedItem); // Notify parent of default selection
+      });
+    } else {
+      log('No data available');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return  Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(Icons.location_on, size: 18, color: Colors.white),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 1,
+                child: DropdownButtonFormField<String>(
+                  value: selectedItem,
+                  items: allDropdownItems
+                      .map(
+                        (item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedItem = value;
+                    });
+                    widget.onLocationSelected(value); // Notify parent of selection
+                  },
+                  decoration: InputDecoration(border: InputBorder.none),
+                  icon: SizedBox.shrink(),
+                  dropdownColor: buttonColor,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+Spacer()            ],
+          );
+  }
+}

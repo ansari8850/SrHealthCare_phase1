@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
+import 'package:sr_health_care/Pages/profilePage/modelandservice/country_data_model.dart';
+import 'package:sr_health_care/Pages/profilePage/modelandservice/country_service.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
 import 'package:sr_health_care/services/image_picker_service.dart';
-import 'package:sr_health_care/trash/address.dart';
 
 import 'modelandservice/login_user_profile.dart';
 import 'modelandservice/user_profile_service.dart';
@@ -22,6 +23,7 @@ class ProfileEdit extends StatefulWidget {
 
 class _ProfileEditState extends State<ProfileEdit> {
   File? _image;
+  CountryDataModel? _countrydatamodel;
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _LastNameController = TextEditingController();
 
@@ -36,26 +38,13 @@ class _ProfileEditState extends State<ProfileEdit> {
   final TextEditingController _stateController = TextEditingController();
 
   final TextEditingController _cityController = TextEditingController();
-  final List<String> countryList = ['India', 'USA', 'Canada', 'Australia'];
-  final Map<String, List<String>> stateMap = {
-    'India': ['Maharashtra', 'Karnataka', 'Delhi', 'Gujarat'],
-    'USA': ['California', 'Texas', 'New York', 'Florida'],
-    'Canada': ['Ontario', 'Quebec', 'British Columbia', 'Alberta'],
-    'Australia': ['New South Wales', 'Victoria', 'Queensland', 'Tasmania'],
-  };
-  final Map<String, List<String>> cityMap = {
-    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik'],
-    'Karnataka': ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubli'],
-    'Delhi': ['New Delhi', 'Dwarka', 'Karol Bagh', 'Rohini'],
-    'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot'],
-    'California': ['Los Angeles', 'San Francisco', 'San Diego', 'Sacramento'],
-    'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio'],
-    'Ontario': ['Toronto', 'Ottawa', 'Mississauga', 'Brampton'],
-    'Victoria': ['Melbourne', 'Geelong', 'Ballarat', 'Bendigo'],
-  };
+  List<String> countryList = [];
+  List<String> stateList = [];
+  // List<String> cityList = [];
+
   String selectedCountry = '';
   String selectedState = '';
-  String selectedCity = '';
+  // String selectedCity = '';
 
   LoginUserProfile? _userProfile;
 
@@ -74,6 +63,58 @@ class _ProfileEditState extends State<ProfileEdit> {
 
     setState(() {});
   }
+
+  Future<void> _fetchCountryData() async {
+    try {
+      final (error, data) = await CountryService().getCountryData();
+
+      if (error != null) {
+        log("Error fetching country data: $error");
+        return;
+      }
+
+      setState(() {
+        countryList = (data?.country ?? []).map((country) => country.name!).toList();
+      });
+    } catch (e) {
+      log("An unexpected error occurred: $e");
+    }
+  }
+
+  Future<void> _fetchStateData(int countryId) async {
+    try {
+      final (error, data) = await CountryService().getStateData(countryId);
+
+      if (error != null) {
+        log("Error fetching state data: $error");
+        return;
+      }
+
+      setState(() {
+        stateList = (data?.country ?? []).map((state) => state.name!).toList();
+      });
+    } catch (e) {
+      log("An unexpected error occurred: $e");
+    }
+  }
+
+  // Future<void> _fetchCityData(int stateId) async {
+  //   try {
+  //     final (error, data) = await CountryService().getCityData(stateId);
+  //     log(data.toString());
+
+  //     if (error != null) {
+  //       log("Error fetching city data: $error");
+  //       return;
+  //     }
+
+  //     setState(() {
+  //       cityList = (data?.cities ?? []).map((city) => city.name!).toList();
+  //     });
+  //   } catch (e) {
+  //     log("An unexpected error occurred: $e");
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -105,6 +146,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   void initState() {
     super.initState();
     _fetchUserProfile();
+    _fetchCountryData();
   }
 
   @override
@@ -148,6 +190,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                               imageUrl: _userProfile?.photo?.url ?? "",
                               fit: BoxFit.cover,
                               borderRadius: 50,
+                              height: Get.height,
+                              width: Get.width,
                             ),
                           ),
                   ),
@@ -187,24 +231,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                       SizedBox(
                         height: 8,
                       ),
-                      // Row(
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     Icon(
-                      //       Icons.delete,
-                      //       color: Colors.red,
-                      //       size: 18,
-                      //     ),
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     CustomText(
-                      //         text: 'Delete Photo',
-                      //         size: 12,
-                      //         color: Colors.red,
-                      //         weight: FontWeight.w400)
-                      //   ],
-                      // )
                     ],
                   )
                 ],
@@ -239,11 +265,25 @@ class _ProfileEditState extends State<ProfileEdit> {
               SizedBox(
                 height: 10,
               ),
-              _buildDropdown(
+             _buildDropdown(
                 'Country',
                 'Select Country',
                 _countryController,
                 countryList,
+                onSelected: (value) {
+                  setState(() {
+                    selectedCountry = value!;
+                    selectedState = ''; // Reset state and city when country changes
+                    // selectedCity = '';
+                    _stateController.clear();
+                    // _cityController.clear();
+                  });
+
+                  final countryId =value != null ? (countryList.indexOf(value) + 1) :null; // Replace with actual mapping
+                  if (countryId != null) {
+                    _fetchStateData(countryId);
+                  }
+                },
               ),
               const SizedBox(height: 10),
               if (selectedCountry.isNotEmpty)
@@ -251,16 +291,33 @@ class _ProfileEditState extends State<ProfileEdit> {
                   'State',
                   'Select State',
                   _stateController,
-                  stateMap[selectedCountry] ?? [],
+                  stateList,
+                  onSelected: (value) {
+                    setState(() {
+                      selectedState = value!;
+                      // selectedCity = ''; // Reset city when state changes
+                      _cityController.clear();
+                    });
+
+                    final stateId = value != null ? (stateList.indexOf(value) + 1) : null; // Replace with actual mapping
+                    // if (stateId != null) {
+                    //   _fetchCityData(stateId);
+                    // }
+                  },
                 ),
               const SizedBox(height: 10),
-              if (selectedState.isNotEmpty)
-                _buildDropdown(
-                  'City',
-                  'Select City',
-                  _cityController,
-                  cityMap[selectedState] ?? [],
-                ),
+              // if (selectedState.isNotEmpty)
+              //   _buildDropdown(
+              //     'City',
+              //     'Select City',
+              //     // _cityController,
+              //     // cityList,
+              //     onSelected: (value) {
+              //       // setState(() {
+              //       //   selectedCity = value!;
+              //       // });
+              //     },
+              //   ),
               _buildTextFiledProfile(
                   'Street 1', "${_userProfile?.street1}", _street1Controller),
               _buildTextFiledProfile(
@@ -322,27 +379,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                           border: InputBorder.none,
                         ),
                       ),
-                      // const SizedBox(height: 10),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     setState(() {
-                      //       _isBioVisible = false; // Close the bio input
-                      //     });
-                      //     // Call API or save the updated bio here
-                      //     log('Bio updated: ${_bioControler.text}');
-                      //   },
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: buttonColor,
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //     ),
-                      //   ),
-                      //   child: CustomText(
-                      //       text: 'Save Bio',
-                      //       size: 14,
-                      //       color: Colors.white,
-                      //       weight: FontWeight.w500),
-                      // ),
                     ],
                   ),
                 ),
@@ -435,86 +471,77 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 
-  Widget _buildDropdown(String label, String hint,
-      TextEditingController controller, List<String> items) {
+   Widget _buildDropdown(
+    String label,
+    String hint,
+    TextEditingController controller,
+    List<String> items, {
+    required void Function(String?) onSelected,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-            text: TextSpan(
-                text: label,
-                style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: blackColor),
-                children: [
+          text: TextSpan(
+            text: label,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: blackColor,
+            ),
+            children: [
               TextSpan(
                 text: "*",
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.red),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.red,
+                ),
               )
-            ])),
+            ],
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButtonFormField<String>(
+            isDense: true,
+            isExpanded: true,
             value: controller.text.isNotEmpty && items.contains(controller.text)
                 ? controller.text
                 : null,
             style: GoogleFonts.poppins(
-                color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w400),
+              color: Colors.grey,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
             borderRadius: BorderRadius.circular(12),
             dropdownColor: Colors.white,
-            // value: controller.text.isNotEmpty ? controller.text : null,
-            items: items.toSet().map((String value) {
+            items: items.map((String value) {
               return DropdownMenuItem(
                 value: value,
                 child: Text(
                   value,
                   style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
                 ),
               );
             }).toList(),
-            onChanged: (value) {
-              controller.text = value.toString();
-              if (label == 'Country') {
-                setState(() {
-                  selectedCountry = value!;
-                  selectedState =
-                      ''; // Reset state and city when country changes
-                  selectedCity = '';
-                  _stateController.clear();
-                  _cityController.clear();
-                });
-              } else if (label == 'State') {
-                setState(() {
-                  selectedState = value!;
-                  selectedCity = ''; // Reset city when state changes
-                  _cityController.clear();
-                });
-              } else if (label == 'City') {
-                setState(() {
-                  selectedCity = value!;
-                });
-              }
-            },
-
-            // controller: controller,
+            onChanged: onSelected,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.poppins(
-                  color: Colors.grey.shade100,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400),
+                color: Colors.grey.shade400,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
               border: InputBorder.none,
             ),
           ),
@@ -522,6 +549,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       ],
     );
   }
+
 
   Padding _buildTextFiledProfile(
       String title, String subtitle, TextEditingController controller) {

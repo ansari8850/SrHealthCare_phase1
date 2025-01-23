@@ -28,7 +28,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
         title: Text(
           "Profile Visibility",
           style: GoogleFonts.poppins(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w500,
             color: Colors.black,
           ),
@@ -42,7 +42,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
             Text(
               "Manage How Your Profile Can Be Viewed On And Off",
               style: GoogleFonts.poppins(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: Colors.grey,
               ),
@@ -90,7 +90,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -99,7 +99,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
                 Text(
                   title,
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: Colors.black,
                   ),
@@ -108,7 +108,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
                 Text(
                   description,
                   style: GoogleFonts.poppins(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w400,
                       color: Colors.grey,
                       height: 1.4),
@@ -116,6 +116,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
               ],
             ),
           ),
+          SizedBox(width: 10,),
           Switch(
             value: value,
             inactiveTrackColor: Colors.white,

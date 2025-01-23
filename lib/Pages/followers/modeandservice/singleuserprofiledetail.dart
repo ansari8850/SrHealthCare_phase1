@@ -7,7 +7,7 @@ import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dar
 class SingleUserPostDetail {
     final bool? success;
     final String? message;
-    final List<FeedPostModel>? result;
+     List<FeedPostModel>? result;
     final int? totalPostCount;
     final int? totalfollowersCount;
     final int? totalfollowingCount;
