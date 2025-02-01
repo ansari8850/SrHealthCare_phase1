@@ -1,0 +1,6 @@
+build/
+.dart_tool/
+android/app/release/*.aab
+build/
+.dart_tool/
+android/app/release/*.aab
