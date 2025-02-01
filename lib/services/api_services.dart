@@ -43,31 +43,14 @@ class ApiService {
           return ("$e", null);
         }
 
-        // Check if there is an error
-        // if (data.error == false) {
-        //   return {
-        //     "success": true,
-        //     "data": data,
-        //   }; // Success response
-        // } else {
-        //   return {
-        //     "success": false,
-        //     "message": data['message'],
-        //   }; // Error message from server
-        // }
+       
       } else {
         return (message.toString(), null);
-        // return {
-        //   "success": false,
-        //   "message": "Invalid credentials or server error",
-        // }; // Generic error message for non-200 response
+      
       }
     } catch (e) {
       return ("$e", null);
-      // return {
-      //   "success": false,
-      //   "message": "Network error: ${e.toString()}",
-      // }; // Catch any network or parsing errors
+    
     }
   }
 

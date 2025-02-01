@@ -8,7 +8,8 @@ import 'package:sr_health_care/const/colors.dart';
 class DropdownExample extends StatefulWidget {
   final Function(String?) onLocationSelected; // Callback to update parent state
 
-  const DropdownExample({Key? key, required this.onLocationSelected}) : super(key: key);
+  const DropdownExample({Key? key, required this.onLocationSelected})
+      : super(key: key);
 
   @override
   _DropdownExampleState createState() => _DropdownExampleState();
@@ -37,9 +38,13 @@ class _DropdownExampleState extends State<DropdownExample> {
             [];
 
         // Create a list of names with the static "All" value
-        allDropdownItems = ["All", ...dropdownItems.map((item) => item.name ?? "").toList()];
+        allDropdownItems = [
+          "All",
+          ...dropdownItems.map((item) => item.name ?? "").toList()
+        ];
         selectedItem = "All"; // Ensure "All" is selected initially
-        widget.onLocationSelected(selectedItem); // Notify parent of default selection
+        widget.onLocationSelected(
+            selectedItem); // Notify parent of default selection
       });
     } else {
       log('No data available');
@@ -48,47 +53,53 @@ class _DropdownExampleState extends State<DropdownExample> {
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.location_on, size: 18, color: Colors.white),
-              SizedBox(width: 10),
-              Expanded(
-                flex: 1,
-                child: DropdownButtonFormField<String>(
-                  value: selectedItem,
-                  items: allDropdownItems
-                      .map(
-                        (item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedItem = value;
-                    });
-                    widget.onLocationSelected(value); // Notify parent of selection
-                  },
-                  decoration: InputDecoration(border: InputBorder.none),
-                  icon: SizedBox.shrink(),
-                  dropdownColor: buttonColor,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Icon(Icons.location_on, size: 18, color: Colors.white),
+        SizedBox(width: 10),
+        Flexible(
+          // flex: 1,
+          fit: FlexFit.tight,
+          child: DropdownButtonFormField<String>(
+            isDense: true,
+            isExpanded: true,
+            borderRadius: BorderRadius.circular(10),
+            value: selectedItem,
+            padding: EdgeInsets.zero,
+            items: allDropdownItems
+                .map(
+                  (item) => DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-Spacer()            ],
-          );
+                )
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedItem = value;
+              });
+              widget.onLocationSelected(value); // Notify parent of selection
+            },
+            decoration: InputDecoration(border: InputBorder.none),
+            icon: SizedBox.shrink(),
+            dropdownColor: buttonColor,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Spacer()
+      ],
+    );
   }
 }

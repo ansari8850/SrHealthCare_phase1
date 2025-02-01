@@ -32,7 +32,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
   void initState() {
     
     super.initState();
-   _pages= [
+   _pages= [ 
     // const MainHomePage(),
     UniqueHomePage(),
     const SearchPage(),

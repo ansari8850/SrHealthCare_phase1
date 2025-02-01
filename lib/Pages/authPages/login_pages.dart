@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sr_health_care/Global/bottom_navigation.dart';
 import 'package:sr_health_care/Pages/authPages/forget_password.dart';
 import 'package:sr_health_care/const/colors.dart';
@@ -23,7 +22,6 @@ class _LoginPagesState extends State<LoginPages> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-  final FirebaseAuth auth = FirebaseAuth.instance;
 
   // Method to handle login
   Future<void> _login() async {
@@ -102,7 +100,7 @@ class _LoginPagesState extends State<LoginPages> {
                 size: 20,
                 color: Color(0xff010007),
                 weight: FontWeight.w700),
-            const SizedBox(height: 8),
+            const SizedBox(height: 8), 
             const CustomText(
                 text:
                     'Log In to enjoy healthy posting and events\n around the world ',

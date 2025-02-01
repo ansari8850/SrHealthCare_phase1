@@ -40,6 +40,8 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
   int currentPage = 1;
   int noOfRef = 10;
   bool isPaginationLoading = false;
+  String userName =
+      "${SharedPreferenceHelper().getUserData()?.name} ${SharedPreferenceHelper().getUserData()?.lastName}";
 
   @override
   void initState() {
@@ -62,11 +64,10 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
     if (isPaginationLoading) {
       return;
     }
-    if(!isLoadMore ){
-      currentPage =1;
+    if (!isLoadMore) {
+      currentPage = 1;
     }
     setState(() {
-
       if (!isLoadMore) {
         isLoading = true;
       } else {
@@ -194,9 +195,9 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
 
   // Build list of posts with UI as per provided code
   Widget _buildPostList() {
-    
     if (isLoading) {
-      return SliverToBoxAdapter(child: const Center(child: CircularProgressIndicator()));
+      return SliverToBoxAdapter(
+          child: const Center(child: CircularProgressIndicator()));
     }
     if (postList.isEmpty) {
       return SliverToBoxAdapter(
@@ -212,7 +213,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
       itemCount: postList.length,
       itemBuilder: (context, index) {
         final post = postList[index];
-    
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           child: GestureDetector(
@@ -313,14 +314,13 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                   ExpandableText(
                     text: post?.description ?? '',
                     trimLength: 100,
-
                   ),
                   const SizedBox(height: 10),
-                  if(post?.fieldName != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: _buildChip(post?.fieldName ?? ''),
-                  ),
+                  if (post?.fieldName != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _buildChip(post?.fieldName ?? ''),
+                    ),
                   const SizedBox(height: 10),
                   Divider(
                     thickness: .5,
@@ -332,7 +332,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                         // Use the isPostSaved method to check if the post is saved
                         bool isSaved =
                             savepostController.isPostSaved(post.id ?? -1);
-    
+
                         return SaveButton(
                           postId: post.id ?? -1,
                           isSaved: isSaved,
@@ -346,8 +346,8 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                           ShareService().shareText(
                               'Hello This Is My Post on Sr HealthCare ${post?.thumbnail}');
                         },
-                        child: _buildAction(
-                            'assets/homepage/share.png', "Share"),
+                        child:
+                            _buildAction('assets/homepage/share.png', "Share"),
                       ),
                     ],
                   ),
@@ -366,7 +366,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
       backgroundColor: whiteColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        toolbarHeight: Get.height / 4.7,
+        toolbarHeight: Get.height / 4.2,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -385,9 +385,9 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
             padding: const EdgeInsets.only(top: 40, left: 10, right: 10),
             child: Column(
               children: [
-                NameNotificationSavedPost(
-                  name:
-                      "${SharedPreferenceHelper().getUserData()?.name} ${SharedPreferenceHelper().getUserData()?.lastName}",
+                SizedBox(
+                  height: 25,
+                  child: NameNotificationSavedPost(name: userName),
                 ),
                 DropdownExample(
                   onLocationSelected: (selectedLocation) {
@@ -404,25 +404,27 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
         ),
       ),
       body: CustomScrollView(
-        controller:  _scrollController,
+        controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(
-           child: postTypes.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: postTypes.map((type) {
-                      return _buildTab(type, selectedTab == type);
-                    }).toList(),
+            child: postTypes.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: postTypes.map((type) {
+                        return _buildTab(type, selectedTab == type);
+                      }).toList(),
+                    ),
                   ),
-                ),),
+          ),
           _buildPostList(),
-           if (isPaginationLoading) 
-                SliverPadding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                sliver: SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
-              ),
+          if (isPaginationLoading)
+            SliverPadding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              sliver: SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator())),
+            ),
         ],
       ),
       floatingActionButton: HomeFloatingButtonCreatePost(),
