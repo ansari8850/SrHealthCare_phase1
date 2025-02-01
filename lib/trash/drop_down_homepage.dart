@@ -75,7 +75,7 @@ class _DropdownExampleState extends State<DropdownExample> {
                       item,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
