@@ -29,8 +29,10 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController searchController = TextEditingController();
   List<PostModel> postList = [];
-  bool isLoading = true;
+  bool isLoading = false;
   List<SearchModel> _searchHistory = [];
+  final deBouncer = Debouncer(delay: const Duration(milliseconds: 200));
+  final newDeBouncer = Debouncer(delay: const Duration(milliseconds: 500));
   @override
   void initState() {
     super.initState();
@@ -60,6 +62,9 @@ class _SearchPageState extends State<SearchPage> {
       });
       return;
     }
+    setState(() {
+      isLoading = true;
+    });
     // _searchHistory.add(SearchModel(searchQuery: search));
     final (error, data) = await PostService()
         .fetchPosts(search: search, currentPage: 1, noOfRec: 10);
@@ -75,9 +80,6 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = false;
     });
   }
-
-  final deBouncer = Debouncer(delay: const Duration(milliseconds: 200));
-  final newDeBouncer = Debouncer(delay: const Duration(milliseconds: 500));
 
   @override
   Widget build(BuildContext context) {
@@ -226,235 +228,238 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          postList.isEmpty
-              ?
-              //Previous Searches Section
-              SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, bottom: 10, right: 10, left: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const CustomText(
-                                text: 'Previous searches',
-                                size: 14,
-                                color: Colors.black,
-                                weight: FontWeight.w500),
-                            GestureDetector(
-                              onTap: () {
-                                SearchApi().deleteSearchHistory(context);
-                                setState(() {
-                                  _fetchSearchHistory();
-                                });
-                              }, // Clear action
-                              child: Text(
-                                'Clear all',
-                                style: GoogleFonts.poppins(
-                                    color: const Color(0xff6656E0),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    decoration: TextDecoration.underline),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      // Display the list of recent searches in a Wrap widget
-                      Container(
-                        child: Wrap(
-                          runAlignment: WrapAlignment.start,
-                          spacing: 10, // Horizontal space between items
-                          runSpacing: 10, // Vertical space between lines
-                          children: _searchHistory.map((search) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    color: buttonColor.withOpacity(.1),
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: Colors.grey.withOpacity(.4),
-                                      width: .6,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize
-                                        .min, // To prevent it from stretching
-                                    children: [
-                                      Image.asset(
-                                        'assets/homepage/tag.png',
-                                        height: 12,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      CustomText(
-                                        text: search.searchQuery ?? '',
-                                        size: 13,
-                                        color: Colors.black,
-                                        weight: FontWeight.w400,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList() ??
-                              [],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              // Main Content Section
-              : SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final post = postList[index];
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 10),
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(PostDetailPage(post: post));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade100,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+          isLoading
+              ? SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()))
+              : postList.isEmpty
+                  ?
+                  //Previous Searches Section
+                  SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 10, right: 10, left: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 26,
-                                      child: AppCacheNetworkImage(
-                                        borderRadius: 50,
-                                        imageUrl: post.user?.photo?.url ?? '',
-                                        height: 100,
-                                        width: Get.width,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            post.user?.name ?? '',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          Text(
-                                            post.user?.department ?? '',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/homepage/clock.png',
-                                          height: 12,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        TimeAgoCustomWidget(
-                                          createdAt:
-                                              post.createdAt.toString() ?? ' ',
-                                          size: 10,
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: AppCacheNetworkImage(
-                                    imageUrl: post.thumbnail ?? '',
-                                    fit: BoxFit.cover,
-                                    height: 180,
-                                    width: double.infinity,
+                                const CustomText(
+                                    text: 'Previous searches',
+                                    size: 14,
+                                    color: Colors.black,
+                                    weight: FontWeight.w500),
+                                GestureDetector(
+                                  onTap: () {
+                                    SearchApi().deleteSearchHistory(context);
+                                    setState(() {
+                                      _fetchSearchHistory();
+                                    });
+                                  }, // Clear action
+                                  child: Text(
+                                    'Clear all',
+                                    style: GoogleFonts.poppins(
+                                        color: const Color(0xff6656E0),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        decoration: TextDecoration.underline),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                ExpandableText(
-                                  text: post.description ??
-                                      '', // Pass the description here
-                                  trimLength:
-                                      100, // Optional: Adjust how many characters to display before truncating
-                                ),
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: _buildChip(
-                                      post.postType?.fieldName ?? ''),
-                                ),
-                                const SizedBox(height: 10),
-                                Divider(
-                                  thickness: .5,
-                                  color: Colors.grey.withOpacity(.2),
-                                ),
-                                Row(
-                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    // Obx(() {
-                                    //   // Use the isPostSaved method to check if the post is saved
-                                    //   bool isSaved = savepostController
-                                    //       .isPostSaved(post.id ?? -1) as bool;
-
-                                    //   return SaveButton(
-                                    //     postId: post.id ?? -1,
-                                    //     isSaved: isSaved,
-                                    //   );
-                                    // }),
-                                    // SaveButton(isSaved:  post.isSaved  ?? true, postId: post.id??0),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        ShareService().shareText('text');
-                                      },
-                                      child: _buildAction(
-                                          'assets/homepage/share.png', "Share"),
-                                    ),
-                                    // const Spacer(),
-                                  ],
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      );
-                    },
-                    childCount: postList.length,
-                  ),
-                ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          // Display the list of recent searches in a Wrap widget
+                          Wrap(
+                            runAlignment: WrapAlignment.start,
+                            spacing: 10, // Horizontal space between items
+                            runSpacing: 10, // Vertical space between lines
+                            children: _searchHistory.map((search) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: buttonColor.withOpacity(.1),
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: Colors.grey.withOpacity(.4),
+                                    width: .6,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize
+                                      .min, // To prevent it from stretching
+                                  children: [
+                                    Image.asset(
+                                      'assets/homepage/tag.png',
+                                      height: 12,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    CustomText(
+                                      text: search.searchQuery ?? '',
+                                      size: 13,
+                                      color: Colors.black,
+                                      weight: FontWeight.w400,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    )
+                  // Main Content Section
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final post = postList[index];
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.to(PostDetailPage(post: post));
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade100,
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 26,
+                                          child: AppCacheNetworkImage(
+                                            borderRadius: 50,
+                                            imageUrl:
+                                                post.user?.photo?.url ?? '',
+                                            height: 100,
+                                            width: Get.width,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                post.user?.name ?? '',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                post.user?.department ?? '',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 10,
+                                                  color: Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/homepage/clock.png',
+                                              height: 12,
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            TimeAgoCustomWidget(
+                                              createdAt:
+                                                  post.createdAt?.toString() ??
+                                                      ' ',
+                                              size: 10,
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: AppCacheNetworkImage(
+                                        imageUrl: post.thumbnail ?? '',
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width: double.infinity,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ExpandableText(
+                                      text: post.description ??
+                                          '', // Pass the description here
+                                      trimLength:
+                                          100, // Optional: Adjust how many characters to display before truncating
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: _buildChip(
+                                          post.postType?.fieldName ?? ''),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Divider(
+                                      thickness: .5,
+                                      color: Colors.grey.withOpacity(.2),
+                                    ),
+                                    Row(
+                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Obx(() {
+                                        //   // Use the isPostSaved method to check if the post is saved
+                                        //   bool isSaved = savepostController
+                                        //       .isPostSaved(post.id ?? -1) as bool;
+
+                                        //   return SaveButton(
+                                        //     postId: post.id ?? -1,
+                                        //     isSaved: isSaved,
+                                        //   );
+                                        // }),
+                                        // SaveButton(isSaved:  post.isSaved  ?? true, postId: post.id??0),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            ShareService().shareText('text');
+                                          },
+                                          child: _buildAction(
+                                              'assets/homepage/share.png',
+                                              "Share"),
+                                        ),
+                                        // const Spacer(),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: postList.length,
+                      ),
+                    ),
         ],
       ),
     );

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/Pages/profilePage/modelandservice/login_user_profile.dart';
@@ -30,11 +29,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _fullNameController.dispose();
     _emailController.dispose();
     _mobileController.dispose();
+    super.dispose();
   }
 
   void _fetchUserProfile() async {
