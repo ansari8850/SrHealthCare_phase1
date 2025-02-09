@@ -8,11 +8,10 @@ import 'package:sr_health_care/const/colors.dart';
 class DropdownExample extends StatefulWidget {
   final Function(String?) onLocationSelected; // Callback to update parent state
 
-  const DropdownExample({Key? key, required this.onLocationSelected})
-      : super(key: key);
+  const DropdownExample({super.key, required this.onLocationSelected});
 
   @override
-  _DropdownExampleState createState() => _DropdownExampleState();
+  State<DropdownExample> createState() => _DropdownExampleState();
 }
 
 class _DropdownExampleState extends State<DropdownExample> {
@@ -40,7 +39,7 @@ class _DropdownExampleState extends State<DropdownExample> {
         // Create a list of names with the static "All" value
         allDropdownItems = [
           "All",
-          ...dropdownItems.map((item) => item.name ?? "").toList()
+          ...dropdownItems.map((item) => item.name ?? "")
         ];
         selectedItem = "All"; // Ensure "All" is selected initially
         widget.onLocationSelected(

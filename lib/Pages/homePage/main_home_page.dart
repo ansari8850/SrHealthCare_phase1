@@ -199,7 +199,7 @@
 //                       Row(
 //                         children: [
 //                           CircleAvatar(
-//                             backgroundColor: Colors.white.withOpacity(.2),
+//                             backgroundColor: Colors.white.withValues(alpha:.2),
 //                             child: Stack(
 //                               clipBehavior: Clip.none,
 //                               children: [
@@ -237,7 +237,7 @@
 //                               Get.to(SavedPostsPage());
 //                             },
 //                             child: CircleAvatar(
-//                               backgroundColor: Colors.white.withOpacity(0.2),
+//                               backgroundColor: Colors.white.withValues(alpha:0.2),
 //                               child: const Icon(Icons.bookmark_border_outlined,
 //                                   color: Colors.white),
 //                             ),
@@ -496,7 +496,7 @@
 //                           const SizedBox(height: 10),
 //                           Divider(
 //                             thickness: .5,
-//                             color: Colors.grey.withOpacity(.2),
+//                             color: Colors.grey.withValues(alpha:.2),
 //                           ),
 //                           Row(
 //                             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -633,7 +633,7 @@
 //         // width: 100,
 //         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
 //         decoration: BoxDecoration(
-//           color: isActive ? buttonColor : buttonColor.withOpacity(.03),
+//           color: isActive ? buttonColor : buttonColor.withValues(alpha:.03),
 //           borderRadius: BorderRadius.circular(15),
 //           // border:
 //           //     isActive ? null : Border.all(color: Colors.grey.shade300, width: 1),
@@ -654,7 +654,7 @@
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 //       decoration: BoxDecoration(
-//         color: Colors.purple.withOpacity(.03),
+//         color: Colors.purple.withValues(alpha:.03),
 //         borderRadius: BorderRadius.circular(25),
 //       ),
 //       child: Row(
@@ -684,7 +684,7 @@
 //       children: [
 //         CircleAvatar(
 //             radius: 15,
-//             backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+//             backgroundColor: const Color(0xffBAF0F4).withValues(alpha:.4),
 //             child: Image.asset(
 //               image,
 //               height: 15,
@@ -790,7 +790,7 @@
 //               children: [
 //                 CircleAvatar(
 //                   radius: 15,
-//                   backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+//                   backgroundColor: const Color(0xffBAF0F4).withValues(alpha:.4),
 //                   child: Image.asset(
 //                     isSaved
 //                         ? 'assets/myfeed/save.png'

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sr_health_care/Pages/Form_pages/create_post_service.dart';
+import 'package:sr_health_care/Pages/Form_pages/field_response_model.dart';
 import 'package:sr_health_care/const/colors.dart';
 
 class SortFilterBottomSheet extends StatefulWidget {
-  const SortFilterBottomSheet({super.key});
+  const SortFilterBottomSheet({super.key, required this.onApplyFilter});
+  final void Function(Map<String, List>) onApplyFilter;
 
   @override
   State<SortFilterBottomSheet> createState() => _SortFilterBottomSheetState();
@@ -13,81 +16,130 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String?> _selectedSortOption = List.filled(4, null);
-
-  final Map<int, Map<String, bool>> _filterData = {
-    0: {
-      'Ayurvedic (120)': false,
-      'Allopathy (60)': false,
-      'Homeopathy (40)': false,
-      'Osteopathy (40)': false,
-      'Acupuncture (25)': false,
-    },
-    1: {
-      'Event(120)': false,
-      'Job Hiring(60)': false,
-      'Product Requirement(40)': false,
-      'Supplier Requirement(40)': false,
-      'Workshops(25)': false,
-      'Campaigns(25)': false,
-    },
-    2: {
-      'Today(120)': false,
-      'Tomorrow(60)': false,
-      'This Week(40)': false,
-      'Last Week(40)': false,
-      'This Month(25)': false,
-      'Custom Range': false,
-    },
-    3: {
-      'Nearby': false,
-      'Within 5km': false,
-      'Within 10km': false,
-    },
-    4: {
-      'Individual(120)': false,
-      'Organization(60)': false,
-      'This Week(40)': false,
-    },
-    5: {
-      'Following (Yes)': false,
-      'Not Following': false,
-    },
-  };
-
-  int _selectedFilterCategory = 0;
+  List<FieldTypeModel> fieldList = [];
+  List<FieldTypeModel> postTypeList = [];
+  bool isLoading = false;
+  Map<String, List<dynamic>> selectedFilters = {};
 
   final List<String> _filterCategories = [
     'Field',
     'Type',
     'Date',
-    'Location',
-    'Post Creator',
-    'Following'
+    // 'Location',
+    // 'Post Creator',
+    // 'Following'
   ];
 
-  void _resetFilters() {
-    setState(() {
-      _filterData.forEach((key, value) {
-        value.updateAll((filterKey, filterValue) => false);
-      });
-    });
-  }
+  /// Key: Category, Value: List of filters for that category
+  late final Map<String, List> _filterData;
 
-  void _applyFilters() {
-    final selectedFilters = _filterData.entries.expand((category) {
-      return category.value.entries
-          .where((filter) => filter.value)
-          .map((filter) => filter.key);
-    }).toList();
-
-    print('Selected Filters: $selectedFilters');
-    Navigator.pop(context);
-  }
+  late String _selectedFilterCategory;
 
   @override
   void initState() {
     super.initState();
+    _selectedFilterCategory = _filterCategories[0];
+    _getIntialData();
+
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  void _resetFilters() {
+    selectedFilters.clear();
+    // setState(() {
+    //   _filterData.forEach((key, value) {
+    //     value.updateAll((filterKey, filterValue) => false);
+    //   });
+    // });
+  }
+
+  void _applyFilters() {
+    // final selectedFilters = <String, List<String>>{};
+    // _filterData.entries.expand((category) {
+    //   return category.value.entries
+    //       .where((filter) => filter.value)
+    //       .map((filter) => filter.key);
+    // }).toList();
+
+    // for (var i = 0; i < _filterData.keys.length; i++) {
+    //   selectedFilters[_filterCategories[i]] = _filterData[_filterCategories[i]]!
+    //       .entries
+    //       .where((filter) => filter.value)
+    //       .map((e) => e.key)
+    //       .toList();
+    // }
+
+    print('Selected Filters: $selectedFilters');
+    //TODO: Implement Filter API Call
+    Navigator.pop(context);
+    widget.onApplyFilter(selectedFilters);
+  }
+
+  void _getIntialData() async {
+    setState(() {
+      isLoading = true;
+    });
+    // Fetch data for fields
+    final fieldResponse = await CreatePostService().fethInitialData('field');
+    fieldList = fieldResponse?.masterList
+            ?.where((item) => item.status == 'Active')
+            .toSet()
+            .toList() ??
+        []; // Ensure uniqueness
+
+    // Fetch data for post types
+    final postTypeResponse = await CreatePostService().fethInitialData('post');
+    postTypeList = postTypeResponse?.masterList
+            ?.where((item) => item.status == 'Active')
+            .toSet()
+            .toSet()
+            .toList() ??
+        []; // Ensure uniqueness
+    _filterData = {
+      _filterCategories[0]: fieldList,
+      // {
+      //   'Ayurvedic (120)': false,
+      //   'Allopathy (60)': false,
+      //   'Homeopathy (40)': false,
+      //   'Osteopathy (40)': false,
+      //   'Acupuncture (25)': false,
+      // },
+      _filterCategories[1]: postTypeList,
+      // {
+      //   'Event(120)': false,
+      //   'Job Hiring(60)': false,
+      //   'Product Requirement(40)': false,
+      //   'Supplier Requirement(40)': false,
+      //   'Workshops(25)': false,
+      //   'Campaigns(25)': false,
+      // },
+      _filterCategories[2]: ['Today(120)'],
+      //  {
+      //   'Today(120)': false,
+      // 'Tomorrow(60)': false,
+      // 'This Week(40)': false,
+      // 'Last Week(40)': false,
+      // 'This Month(25)': false,
+      // 'Custom Range': false,
+      // },
+      // 3: {
+      //   'Nearby': false,
+      //   'Within 5km': false,
+      //   'Within 10km': false,
+      // },
+      // 4: {
+      //   'Individual(120)': false,
+      //   'Organization(60)': false,
+      //   'This Week(40)': false,
+      // },
+      // 5: {
+      //   'Following (Yes)': false,
+      //   'Not Following': false,
+      // },
+    };
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -105,13 +157,15 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
         children: [
           _buildTabBar(),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildSortByTab(),
-                _buildFilterByTab(),
-              ],
-            ),
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildSortByTab(),
+                      _buildFilterByTab(),
+                    ],
+                  ),
           ),
           _bottomButtons(),
         ],
@@ -141,15 +195,15 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
           children: [
             _sectionHeader('Time', 'assets/filter/greyc.png'),
             _buildOptionRow(['Newest First', 'Oldest First'], 0),
-            const SizedBox(height: 6),
-            _sectionHeader('Location', 'assets/filter/greyll.png'),
-            _buildOptionRow(['Closest', 'Farthest'], 1),
-            const SizedBox(height: 6),
-            _sectionHeader('Popularity', 'assets/filter/greyl.png'),
-            _buildOptionRow(['Most Shared', 'Most Commented'], 2),
-            const SizedBox(height: 6),
-            _sectionHeader('Date', 'assets/filter/greycc.png'),
-            _buildOptionRow(['Today', 'Custom'], 3),
+            // const SizedBox(height: 6),
+            // _sectionHeader('Location', 'assets/filter/greyll.png'),
+            // _buildOptionRow(['Closest', 'Farthest'], 1),
+            // const SizedBox(height: 6),
+            // _sectionHeader('Popularity', 'assets/filter/greyl.png'),
+            // _buildOptionRow(['Most Shared', 'Most Commented'], 2),
+            // const SizedBox(height: 6),
+            // _sectionHeader('Date', 'assets/filter/greycc.png'),
+            // _buildOptionRow(['Today', 'Custom'], 3),
           ],
         ),
       ),
@@ -236,14 +290,14 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
         Container(
           padding: const EdgeInsets.only(left: 5),
           width: 120,
-          color: buttonColor.withOpacity(.1),
+          color: buttonColor.withValues(alpha: .1),
           child: ListView.builder(
             itemCount: _filterCategories.length,
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {
                   setState(() {
-                    _selectedFilterCategory = index;
+                    _selectedFilterCategory = _filterCategories[index];
                   });
                 },
                 child: Container(
@@ -254,7 +308,8 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                       Text(
                         _filterCategories[index],
                         style: GoogleFonts.poppins(
-                          color: _selectedFilterCategory == index
+                          color: _selectedFilterCategory ==
+                                  _filterCategories[index]
                               ? buttonColor
                               : Colors.black87,
                           fontWeight: FontWeight.w400,
@@ -265,9 +320,10 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                       Container(
                         width: 2,
                         height: 25,
-                        color: _selectedFilterCategory == index
-                            ? buttonColor
-                            : Colors.transparent,
+                        color:
+                            _selectedFilterCategory == _filterCategories[index]
+                                ? buttonColor
+                                : Colors.transparent,
                       ),
                     ],
                   ),
@@ -281,9 +337,8 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
           child: Container(
             color: Colors.white,
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-              children:
-                  _filterData[_selectedFilterCategory]!.keys.map((option) {
+              padding: EdgeInsets.zero,
+              children: _filterData[_selectedFilterCategory]!.map((option) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: CheckboxListTile(
@@ -292,18 +347,31 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                     dense: true,
                     controlAffinity: ListTileControlAffinity.leading,
                     title: Text(
-                      option,
+                      (option is FieldTypeModel)
+                          ? (option).name.toString()
+                          : option.toString(),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                         color: Colors.black87,
                       ),
                     ),
-                    value: _filterData[_selectedFilterCategory]![option],
+                    value: (selectedFilters[_selectedFilterCategory] ?? [])
+                        .contains(option),
+                    // _filterData[_selectedFilterCategory]![option],
                     activeColor: buttonColor,
                     onChanged: (bool? value) {
+                      if (value == true) {
+                        final tempList =
+                            selectedFilters[_selectedFilterCategory] ?? [];
+                        tempList.add(option);
+                        selectedFilters[_selectedFilterCategory] = tempList;
+                      } else {
+                        selectedFilters[_selectedFilterCategory]!
+                            .remove(option);
+                      }
                       setState(() {
-                        _filterData[_selectedFilterCategory]![option] = value!;
+                        // _filterData[_selectedFilterCategory]![option] = value!;
                       });
                     },
                   ),
@@ -354,7 +422,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child:  Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   'Apply',
@@ -369,16 +437,16 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
   }
 }
 
-void showSortFilterBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
-      ),
-    ),
-    builder: (_) => const SortFilterBottomSheet(),
-  );
-}
+// void showSortFilterBottomSheet(BuildContext context) {
+//   showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.only(
+//         topLeft: Radius.circular(16),
+//         topRight: Radius.circular(16),
+//       ),
+//     ),
+//     builder: (_) => const SortFilterBottomSheet(),
+//   );
+// }

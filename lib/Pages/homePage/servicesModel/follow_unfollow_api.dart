@@ -35,7 +35,7 @@ class FollowUnfollowApi {
           }));
           if(response.statusCode == 200){
             log(response.body);
-          };
+          }
       log(response.body);
       message = jsonDecode(response.body)?['message'];
       if (message.contains('Successfully')) {

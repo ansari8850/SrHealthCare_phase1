@@ -40,18 +40,18 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     });
 
     if (response["error"] == null || response["error"] == false) {
-     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("OTP has been sent to your WhatsApp number."),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-     // Navigate to login page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPages()),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("OTP has been sent to your WhatsApp number."),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      // Navigate to login page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPages()),
+      );
     } else {
       setState(() {
         _errorMessage = response["message"] ?? "Failed to send code.";
@@ -111,12 +111,12 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.withOpacity(.2)),
+                  border: Border.all(color: Colors.grey.withValues(alpha: .2)),
                   borderRadius: BorderRadius.circular(8)),
               child: TextField(
                 keyboardType: TextInputType.number,
                 controller: _mobileController,
-                cursorColor: Colors.grey.withOpacity(.3),
+                cursorColor: Colors.grey.withValues(alpha: .3),
                 decoration: InputDecoration(
                     hintText: 'Enter mobile no',
                     border: InputBorder.none,

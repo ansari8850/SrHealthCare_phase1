@@ -9,7 +9,7 @@ class OnboardingScreens extends StatefulWidget {
   const OnboardingScreens({super.key});
 
   @override
-  _OnboardingScreensState createState() => _OnboardingScreensState();
+  State<OnboardingScreens> createState() => _OnboardingScreensState();
 }
 
 class _OnboardingScreensState extends State<OnboardingScreens> {

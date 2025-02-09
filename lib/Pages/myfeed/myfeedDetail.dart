@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
@@ -15,7 +14,7 @@ import 'package:sr_health_care/services/share_plus_service.dart';
 class MyFeedDetail extends StatefulWidget {
   final int id;
 
-  MyFeedDetail({super.key, required this.id});
+  const MyFeedDetail({super.key, required this.id});
 
   @override
   State<MyFeedDetail> createState() => _MyFeedDetailState();
@@ -168,13 +167,13 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: _postDetail?.status == 'Approved'
-                          ? Colors.blue.withOpacity(.3)
+                          ? Colors.blue.withValues(alpha: .3)
                           : _postDetail?.status == 'Pending'
                               ? Color(0xffF7F7E8)
                               : _postDetail?.status == 'Rejected'
-                                  ? Colors.red.withOpacity(.3)
+                                  ? Colors.red.withValues(alpha: .3)
                                   : _postDetail?.status == 'Reported'
-                                      ? Colors.blueGrey.withOpacity(.3)
+                                      ? Colors.blueGrey.withValues(alpha: .3)
                                       : Colors.white,
                     ),
                     child: Row(
@@ -240,11 +239,11 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                           width: 20,
                         ),
                         GestureDetector(
-                            onTap: ()  {
+                            onTap: () {
                               // await CreatePostService()
                               //     .deletePost(_postDetail?.id ?? 0);
                               // Navigator.pop(context, true);
-                               _showDeleteConfirmationDialog(context);
+                              _showDeleteConfirmationDialog(context);
                             },
                             child: _buildActionIcon(
                                 'assets/homepage/delete.png',
@@ -277,7 +276,7 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: MySeparator(
                       // height: 10,
-                      color: Colors.grey.withOpacity(.3),
+                      color: Colors.grey.withValues(alpha: .3),
                     ),
                   ),
 
@@ -309,7 +308,7 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                             width: 5,
                           ),
                           TimeAgoCustomWidget(
-                            size: 10,
+                              size: 10,
                               createdAt:
                                   _postDetail?.createdAt.toString() ?? '')
                         ],
@@ -392,17 +391,17 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
         return AlertDialog(
           backgroundColor: whiteColor,
           title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this post?' ,style: GoogleFonts.poppins(
-                color: blackColor
-              )),
+          content: Text('Are you sure you want to delete this post?',
+              style: GoogleFonts.poppins(color: blackColor)),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Cancel', style: GoogleFonts.poppins(
-                color: blackColor
-              ),),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(color: blackColor),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -411,9 +410,8 @@ class _MyFeedDetailState extends State<MyFeedDetail> {
                 Navigator.of(context).pop(); // Close the dialog
                 Navigator.pop(context, true); // Pop to the main page
               },
-              child: Text('Delete',style: GoogleFonts.poppins(
-                color: Colors.red
-              )),
+              child:
+                  Text('Delete', style: GoogleFonts.poppins(color: Colors.red)),
             ),
           ],
         );
@@ -461,8 +459,8 @@ Widget _buildEventInfo(String text, String icon) {
       ),
       const SizedBox(height: 4),
       Text(text,
-          style: GoogleFonts.poppins(
-              fontSize: 8, color: const Color(0xff0A4D3C))),
+          style:
+              GoogleFonts.poppins(fontSize: 8, color: const Color(0xff0A4D3C))),
     ],
   );
 }
@@ -486,7 +484,7 @@ Widget _buildEventInfoDate(String createdAt, String iconAsset) {
           height: 18,
           fit: BoxFit.contain,
         ),
-         // Added spacing for better visual separation
+        // Added spacing for better visual separation
         Text(
           formattedDate,
           textAlign: TextAlign.center,
@@ -496,7 +494,7 @@ Widget _buildEventInfoDate(String createdAt, String iconAsset) {
             color: Color(0xff0A4D3C),
           ),
         ),
-       // Spacing between date and time
+        // Spacing between date and time
         Text(
           postedTime,
           textAlign: TextAlign.center,

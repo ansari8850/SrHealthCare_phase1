@@ -31,7 +31,7 @@ class SaveButton extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 15,
-                backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+                backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
                 child: Image.asset(
                   isSaved
                       ? 'assets/myfeed/save.png'

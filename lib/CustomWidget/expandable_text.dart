@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 class ExpandableText extends StatefulWidget {
   final String text;
   final int trimLength;
-   Color color;
+  final Color color;
 
-   ExpandableText({
+  const ExpandableText({
     super.key,
     required this.text,
     this.trimLength = 61, // Default to 100 characters before collapsing
@@ -47,7 +47,7 @@ class _ExpandableTextState extends State<ExpandableText> {
             child: Text(
               _isExpanded ? "See Less" : "See More",
               style: GoogleFonts.poppins(
-                // height: 14,
+                  // height: 14,
                   fontSize: 10,
                   color: widget.color,
                   fontWeight: FontWeight.w400,

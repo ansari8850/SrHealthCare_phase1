@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,10 +18,10 @@ import 'package:sr_health_care/services/share_plus_service.dart';
 import 'package:sr_health_care/services/whatsapp_service.dart';
 
 class FollowerProfile extends StatefulWidget {
-  String postUsedId;
-  bool? isAboveFollowing;
-  int isSaved = 0;
-  FollowerProfile(
+  final String postUsedId;
+  final bool? isAboveFollowing;
+  final int isSaved;
+  const FollowerProfile(
       {super.key,
       required this.postUsedId,
       this.isAboveFollowing,
@@ -30,10 +32,10 @@ class FollowerProfile extends StatefulWidget {
 }
 
 class _FollowerProfileState extends State<FollowerProfile> {
-  bool _isExpanded = false;
+  // final bool _isExpanded = false;
   SingleUserPostDetail? userDetailPost;
   bool isFollowing = false;
-  int _currentUserID = SharedPreferenceHelper().getUserData()?.id ?? 0;
+  // final int _currentUserID = SharedPreferenceHelper().getUserData()?.id ?? 0;
 
   @override
   void initState() {
@@ -69,7 +71,7 @@ class _FollowerProfileState extends State<FollowerProfile> {
               false;
         } else {
           // If no approved posts are found, you can handle this case (e.g., show a message)
-          print("No approved posts available.");
+          log("No approved posts available.");
         }
       });
     }
@@ -744,7 +746,7 @@ class _FollowerProfileState extends State<FollowerProfile> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
-        backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+        backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
         child: Icon(
           icon,
           color: Colors.grey,
@@ -767,7 +769,7 @@ Widget _tag(String label) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
     decoration: BoxDecoration(
-      color: buttonColor.withOpacity(0.1),
+      color: buttonColor.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(10),
     ),
     child: Row(

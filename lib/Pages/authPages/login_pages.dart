@@ -127,12 +127,12 @@ class _LoginPagesState extends State<LoginPages> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withOpacity(.2)),
+                border: Border.all(color: Colors.grey.withValues(alpha: .2)),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextField(
                 controller: _emailController,
-                cursorColor: Colors.grey.withOpacity(.3),
+                cursorColor: Colors.grey.withValues(alpha: .3),
                 decoration: InputDecoration(
                   hintText: 'Enter Email',
                   border: InputBorder.none,
@@ -167,13 +167,13 @@ class _LoginPagesState extends State<LoginPages> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withOpacity(.2)),
+                border: Border.all(color: Colors.grey.withValues(alpha: .2)),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
-                cursorColor: Colors.grey.withOpacity(.3),
+                cursorColor: Colors.grey.withValues(alpha: .3),
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
@@ -185,7 +185,7 @@ class _LoginPagesState extends State<LoginPages> {
                       _isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: Colors.grey.withOpacity(.3),
+                      color: Colors.grey.withValues(alpha: .3),
                     ),
                   ),
                   hintText: 'Enter Password',

@@ -13,7 +13,8 @@ class ServiceToFetahcDetailUser {
 
   factory ServiceToFetahcDetailUser() => _instance;
 
-  static const String baseUrl = "https://backend.srhealthcarecommunity.com/api/";
+  static const String baseUrl =
+      "https://backend.srhealthcarecommunity.com/api/";
 
   Future<SingleUserPostDetail?> fetchPostUserDetail({
     String? postUsedId,
@@ -37,7 +38,9 @@ class ServiceToFetahcDetailUser {
           log('Failed to fetch saved posts: ${response.body}');
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      log("Error: $e");
+    }
     return null;
   }
 }

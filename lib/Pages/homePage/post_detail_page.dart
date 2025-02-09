@@ -8,14 +8,12 @@ import 'package:sr_health_care/CustomWidget/dotted_divider.dart';
 import 'package:sr_health_care/CustomWidget/follow_button.dart';
 import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
-import 'package:sr_health_care/Global/bottom_navigation.dart';
 import 'package:sr_health_care/Pages/detailPost/report_post.dart';
 import 'package:sr_health_care/Pages/followers/follower_profile.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/home_api_service.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
-import 'package:sr_health_care/services/post_save_and_unsave_service.dart';
 import 'package:sr_health_care/services/share_plus_service.dart';
 import 'package:sr_health_care/services/whatsapp_service.dart';
 
@@ -203,7 +201,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
                           child: MySeparator(
-                            color: Colors.grey.withOpacity(.3),
+                            color: Colors.grey.withValues(alpha: .3),
                           ),
                         ),
 
@@ -240,7 +238,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   ),
                                 ),
                                 title: Text(
-                                  '${_postDetail?.userName ?? ''}',
+                                  _postDetail?.userName ?? '',
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12,
@@ -296,7 +294,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   vertical: 5, horizontal: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: buttonColor.withOpacity(.1),
+                                color: buttonColor.withValues(alpha: .1),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,

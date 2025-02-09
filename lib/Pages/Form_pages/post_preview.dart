@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,7 +37,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
             color: blackColor,
             weight: FontWeight.w500),
         centerTitle: false,
-        backgroundColor: Colors.grey.withOpacity(.1),
+        backgroundColor: Colors.grey.withValues(alpha: .1),
         elevation: 0,
         foregroundColor: Colors.black,
       ),
@@ -89,7 +88,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Divider(
                 thickness: .5,
-                color: Colors.grey.withOpacity(.2),
+                color: Colors.grey.withValues(alpha: .2),
               ),
             ),
             Padding(
@@ -110,7 +109,8 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
             const SizedBox(height: 24),
             Container(
               height: 20,
-              decoration: BoxDecoration(color: Colors.grey.withOpacity(.1)),
+              decoration:
+                  BoxDecoration(color: Colors.grey.withValues(alpha: .1)),
             ),
             const SizedBox(height: 24),
             // Padding(
@@ -132,7 +132,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
             //   padding: const EdgeInsets.symmetric(horizontal: 10),
             //   child: Divider(
             //     thickness: .5,
-            //     color: Colors.grey.withOpacity(.2),
+            //     color: Colors.grey.withValues(alpha:.2),
             //   ),
             // ),
             // Padding(
@@ -144,7 +144,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
             //   padding: const EdgeInsets.symmetric(horizontal: 10),
             //   child: Divider(
             //     thickness: .5,
-            //     color: Colors.grey.withOpacity(.2),
+            //     color: Colors.grey.withValues(alpha:.2),
             //   ),
             // ),
             // Padding(
@@ -176,7 +176,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
         ),
         // CircleAvatar(
         //   radius: 17,
-        //   backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+        //   backgroundColor: const Color(0xffBAF0F4).withValues(alpha:.4),
         //   // backgroundImage: AssetImage('assets/homepage/pen.png'),
         //   child: Image.asset(
         //     'assets/homepage/pen.png',
@@ -239,7 +239,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
                 workmode,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.withOpacity(.5),
+                  color: Colors.grey.withValues(alpha: .5),
                   height: 1.4,
                   fontWeight: FontWeight.w400,
                 ),
@@ -324,7 +324,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
           ),
           CircleAvatar(
             radius: 17,
-            backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+            backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
             // backgroundImage: AssetImage('assets/homepage/pen.png'),
             child: Image.asset(
               'assets/homepage/pen.png',
@@ -362,7 +362,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
           ),
           CircleAvatar(
               radius: 17,
-              backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+              backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
               // backgroundImage: AssetImage('assets/homepage/pen.png'),
               child: const Icon(
                 Icons.add,
@@ -524,7 +524,7 @@ class _PreviewPostPageState extends State<PreviewPostPage> {
               autodeletedate: widget.post.autoDeleteDate.toString(),
               thumbnail: imageUrl,
               postType: widget.post.postType?.type,
-              postId:  widget.post.postType?.id??0,
+              postId: widget.post.postType?.id ?? 0,
               title: widget.post.fieldName);
           setState(() {
             isLoading = false;

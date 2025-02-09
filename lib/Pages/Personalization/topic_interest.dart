@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sr_health_care/Pages/homePage/main_home_page.dart';
 
 class TopicInterest extends StatefulWidget {
   const TopicInterest({super.key});
@@ -120,7 +119,7 @@ class _TopicInterestState extends State<TopicInterest> {
           decoration: BoxDecoration(
             color: _currentPage == index
                 ? const Color(0xff7F72E5)
-                : const Color(0xff402CD8).withOpacity(.1),
+                : const Color(0xff402CD8).withValues(alpha: .1),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -156,7 +155,7 @@ class _TopicInterestState extends State<TopicInterest> {
               border: Border.all(
                 color: isSelected
                     ? Colors.deepPurpleAccent
-                    : Colors.grey.withOpacity(0.3),
+                    : Colors.grey.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -212,7 +211,7 @@ class _TopicInterestState extends State<TopicInterest> {
               border: Border.all(
                 color: isSelected
                     ? Colors.deepPurpleAccent
-                    : Colors.grey.withOpacity(0.3),
+                    : Colors.grey.withValues(alpha: 0.3),
               ),
             ),
             child: Text(
@@ -256,7 +255,7 @@ class _TopicInterestState extends State<TopicInterest> {
               border: Border.all(
                 color: isSelected
                     ? Colors.deepPurpleAccent
-                    : Colors.grey.withOpacity(0.3),
+                    : Colors.grey.withValues(alpha: 0.3),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -286,7 +285,8 @@ class _TopicInterestState extends State<TopicInterest> {
                     right: 0,
                     top: 0,
                     child: Checkbox(
-                      side: BorderSide(color: Colors.grey.withOpacity(.3)),
+                      side:
+                          BorderSide(color: Colors.grey.withValues(alpha: .3)),
                       value: isSelected,
                       onChanged: (value) {
                         setState(() {
@@ -373,7 +373,7 @@ class _TopicInterestState extends State<TopicInterest> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.grey.withOpacity(.8),
+                                color: Colors.grey.withValues(alpha: .8),
                               ),
                             ),
                           ),
@@ -421,7 +421,7 @@ class _TopicInterestState extends State<TopicInterest> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.grey.withOpacity(.8),
+                                color: Colors.grey.withValues(alpha: .8),
                               ),
                             ),
                           ),
@@ -469,7 +469,7 @@ class _TopicInterestState extends State<TopicInterest> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.grey.withOpacity(.8),
+                                color: Colors.grey.withValues(alpha: .8),
                               ),
                             ),
                           ),
@@ -515,7 +515,7 @@ class _TopicInterestState extends State<TopicInterest> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.grey.withOpacity(.8),
+                                color: Colors.grey.withValues(alpha: .8),
                               ),
                             ),
                           ),

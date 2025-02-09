@@ -12,13 +12,12 @@ import 'package:sr_health_care/Pages/myfeed/myfeedDetail.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
 
-// ignore: must_be_immutable
 class MyFeedPage extends StatefulWidget {
-  String userID;
-  MyFeedPage({super.key, required this.userID});
+  final String userID;
+  const MyFeedPage({super.key, required this.userID});
 
   @override
-  _MyFeedPageState createState() => _MyFeedPageState();
+  State<MyFeedPage> createState() => _MyFeedPageState();
 }
 
 class _MyFeedPageState extends State<MyFeedPage> {
@@ -29,8 +28,12 @@ class _MyFeedPageState extends State<MyFeedPage> {
   List<FeedPostModel> approved = [];
   List<FeedPostModel> pending = [];
   List<FeedPostModel> rejected = [];
+  bool _isLoading = false;
 
   Future<void> fetchMyFeed() async {
+    setState(() {
+      _isLoading = true;
+    });
     final userDetail = await ServiceToFetahcDetailUser()
         .fetchPostUserDetail(postUsedId: widget.userID);
     if (userDetail != null) {
@@ -43,7 +46,9 @@ class _MyFeedPageState extends State<MyFeedPage> {
           rejected.add(userDetail.result![i]);
         }
       }
-      setState(() {});
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -103,8 +108,10 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 // Ensure only the current tab remains active (no changes to the state)
                 setState(() {});
 
-                // Close the dialog
-                Navigator.pop(context, true);
+                if (context.mounted) {
+                  // Close the dialog
+                  Navigator.pop(context, true);
+                }
               },
             ),
             TextButton(
@@ -147,7 +154,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
             // margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              // color: Colors.grey.withOpacity(.1),
+              // color: Colors.grey.withValues(alpha:.1),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
             child: Row(
@@ -182,11 +189,13 @@ class _MyFeedPageState extends State<MyFeedPage> {
           ),
           const SizedBox(height: 10),
           // Feed List
-          isApprovedSelected
-              ? _buildApprovedList()
-              : isPendingSelected
-                  ? _buildPendingList()
-                  : _buildRejectedList(),
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : isApprovedSelected
+                  ? _buildApprovedList()
+                  : isPendingSelected
+                      ? _buildPendingList()
+                      : _buildRejectedList(),
         ],
       ),
     );
@@ -342,8 +351,8 @@ class _MyFeedPageState extends State<MyFeedPage> {
         border:
             Border.all(color: isSelected ? buttonColor : Colors.transparent),
         color: isSelected
-            ? Colors.grey.withOpacity(.06)
-            : Colors.grey.withOpacity(.2),
+            ? Colors.grey.withValues(alpha: .06)
+            : Colors.grey.withValues(alpha: .2),
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
@@ -438,7 +447,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
               ],
             ),
             const SizedBox(height: 10),
-            Divider(thickness: .5, color: Colors.grey.withOpacity(.2)),
+            Divider(thickness: .5, color: Colors.grey.withValues(alpha: .2)),
 
             // Tags and Comments
             Row(
@@ -471,7 +480,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: buttonColor.withOpacity(0.2),
+        color: buttonColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Text(
