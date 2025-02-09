@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/Controller/follow_unfollow_controller.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/expandable_text.dart';
-import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
 import 'package:sr_health_care/Pages/detailPost/report_post.dart';
 import 'package:sr_health_care/Pages/followers/about_profile.dart';
@@ -19,7 +18,12 @@ import 'package:sr_health_care/services/whatsapp_service.dart';
 class FollowerProfile extends StatefulWidget {
   String postUsedId;
   bool? isAboveFollowing;
-  FollowerProfile({super.key, required this.postUsedId, this.isAboveFollowing});
+  int isSaved = 0;
+  FollowerProfile(
+      {super.key,
+      required this.postUsedId,
+      this.isAboveFollowing,
+      this.isSaved = 0});
 
   @override
   State<FollowerProfile> createState() => _FollowerProfileState();
@@ -402,8 +406,9 @@ class _FollowerProfileState extends State<FollowerProfile> {
                     height: 10,
                   ),
                   ExpandableText(
-                      text: userDetailPost?.result?.firstOrNull?.user?.bio ??
-                          'No Bio Available' , ),
+                    text: userDetailPost?.result?.firstOrNull?.user?.bio ??
+                        'No Bio Available',
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -525,7 +530,9 @@ class _FollowerProfileState extends State<FollowerProfile> {
                       color: Colors.grey,
                       weight: FontWeight.w400,
                     ),
-                    SizedBox(height: 5,),
+                    SizedBox(
+                      height: 5,
+                    ),
                     Row(
                       children: [
                         Image.asset(
@@ -538,7 +545,7 @@ class _FollowerProfileState extends State<FollowerProfile> {
                         TimeAgoCustomWidget(
                           createdAt:
                               feedPost?.postType?.createdAt?.toString() ?? '',
-                              size: 10,
+                          size: 10,
                         ),
                       ],
                     ),
@@ -622,16 +629,14 @@ class _FollowerProfileState extends State<FollowerProfile> {
                 icon: Icons.bookmark_outline,
                 label: 'Save Post',
                 onTap: () {
-                  Obx(() {
-                    return SaveButton(
-                      postId: iD,
-                      isSaved: savepostController.savedPostID.contains(iD),
-                    );
-
-                  });
+                  // Obx(() {
+                  //   return SaveButton(
+                  //     postId: iD,
+                  //     isSaved: savepostController.savedPostID.contains(iD),
+                  //   );
+                  // });
                   // Add your functionality here
-                                                        Navigator.pop(context);
-
+                  Navigator.pop(context);
                 },
               ),
               _bottomSheetOption(

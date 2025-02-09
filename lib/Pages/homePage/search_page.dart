@@ -7,8 +7,6 @@ import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/expandable_text.dart';
-import 'package:sr_health_care/CustomWidget/modal_bottom_sheet_home.dart';
-import 'package:sr_health_care/CustomWidget/save_unsaved_button.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
 import 'package:sr_health_care/Pages/homePage/post_detail_page.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
@@ -434,26 +432,25 @@ class _SearchPageState extends State<SearchPage> {
                                 Row(
                                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Obx(() {
-                                      // Use the isPostSaved method to check if the post is saved
-                                      bool isSaved = savepostController
-                                          .isPostSaved(post.id ?? -1);
+                                    // Obx(() {
+                                    //   // Use the isPostSaved method to check if the post is saved
+                                    //   bool isSaved = savepostController
+                                    //       .isPostSaved(post.id ?? -1) as bool;
 
-                                      return SaveButton(
-                                        postId: post.id ?? -1,
-                                        isSaved: isSaved,
-                                      );
-                                    }),
+                                    //   return SaveButton(
+                                    //     postId: post.id ?? -1,
+                                    //     isSaved: isSaved,
+                                    //   );
+                                    // }),
                                     // SaveButton(isSaved:  post.isSaved  ?? true, postId: post.id??0),
                                     const SizedBox(
                                       width: 15,
                                     ),
                                     InkWell(
-                                      onTap: (){
+                                      onTap: () {
                                         ShareService().shareText('text');
                                       },
                                       child: _buildAction(
-                                        
                                           'assets/homepage/share.png', "Share"),
                                     ),
                                     // const Spacer(),
