@@ -86,7 +86,7 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
     return Container(
       // padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        // border: Border.all(color: Colors.grey.withOpacity(0.5)),
+        // border: Border.all(color: Colors.grey.withValues(alpha:0.5)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -116,7 +116,9 @@ class _ProfileVisibilityScreenState extends State<ProfileVisibilityScreen> {
               ],
             ),
           ),
-          SizedBox(width: 10,),
+          SizedBox(
+            width: 10,
+          ),
           Switch(
             value: value,
             inactiveTrackColor: Colors.white,

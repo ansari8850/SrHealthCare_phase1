@@ -18,7 +18,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
   int _selectedIndex = 0;
 
   // List of pages
-   late final List<Widget> _pages ;
+  late final List<Widget> _pages;
 
   final List<String> _titles = ["Home", "Search", "My Feed", "Profile"];
   final List<String> _iconPaths = [
@@ -29,21 +29,20 @@ class _BottomNavPageState extends State<BottomNavPage> {
 
   @override
   void initState() {
-    
     super.initState();
-   _pages= [ 
-    // const MainHomePage(),
-    UniqueHomePage(),
-    const SearchPage(),
-    MyFeedPage(
-      userID: SharedPreferenceHelper().getUserData()?.id.toString() ??'',
-    ),
-     SettingPage(
-      onUpdate: () {
-        setState(() {});
-      },
-     )
-  ];
+    _pages = [
+      // const MainHomePage(),
+      UniqueHomePage(),
+      const SearchPage(),
+      MyFeedPage(
+        userID: SharedPreferenceHelper().getUserData()?.id.toString() ?? '',
+      ),
+      SettingPage(
+        onUpdate: () {
+          setState(() {});
+        },
+      )
+    ];
   }
 
   void _onItemTapped(int index) {
@@ -77,7 +76,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
               topLeft: Radius.circular(15), topRight: Radius.circular(15)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               spreadRadius: 1,
               blurRadius: 10,
               offset: const Offset(0, 3),
@@ -113,11 +112,10 @@ class _BottomNavPageState extends State<BottomNavPage> {
                                       bottomRight: Radius.circular(8)),
                                 ),
                               ),
-                               const SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             _buildProfileIcon(),
-                           
                           ],
                         )
                       : Column(

@@ -11,7 +11,7 @@ class DropdownExample extends StatefulWidget {
   const DropdownExample({super.key, required this.onLocationSelected});
 
   @override
-  _DropdownExampleState createState() => _DropdownExampleState();
+  State<DropdownExample> createState() => _DropdownExampleState();
 }
 
 class _DropdownExampleState extends State<DropdownExample> {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
-import 'package:sr_health_care/Pages/profilePage/modelandservice/country_data_model.dart';
 import 'package:sr_health_care/Pages/profilePage/modelandservice/country_service.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
@@ -24,7 +23,6 @@ class ProfileEdit extends StatefulWidget {
 class _ProfileEditState extends State<ProfileEdit> {
   bool _isLoading = false;
   File? _image;
-  CountryDataModel? _countrydatamodel;
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
 
@@ -125,8 +123,6 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _firstNameController.dispose();
     _emailController.dispose();
     _mobileController.dispose();
@@ -139,6 +135,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     _stateController.dispose();
     _countryController.dispose();
     _cityController.dispose();
+    super.dispose();
   }
 
   bool _isBioVisible = false;
@@ -371,8 +368,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.grey.withOpacity(.3)),
+                          border: Border.all(
+                              color: Colors.grey.withValues(alpha: .3)),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -585,7 +582,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withOpacity(.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: .3)),
                 borderRadius: BorderRadius.circular(12)),
             child: TextField(
               style: GoogleFonts.poppins(

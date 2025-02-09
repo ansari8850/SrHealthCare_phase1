@@ -36,7 +36,7 @@ class _SetNewPasswordState extends State<SetNewPassword> {
                     height: 60,
                     width: 60,
                     decoration: const BoxDecoration(
-                      // color: Colors.deepPurpleAccent.withOpacity(0.1),
+                      // color: Colors.deepPurpleAccent.withValues(alpha:0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Image.asset('assets/login/change.png')),
@@ -109,7 +109,7 @@ class _SetNewPasswordState extends State<SetNewPassword> {
             CustomText(
               text: 'Must be at least 8 characters',
               size: 13,
-              color: Colors.grey.withOpacity(.9),
+              color: Colors.grey.withValues(alpha: .9),
               weight: FontWeight.w400,
             ),
             const SizedBox(height: 15),
@@ -172,12 +172,12 @@ class _SetNewPasswordState extends State<SetNewPassword> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.withOpacity(.2)),
+            border: Border.all(color: Colors.grey.withValues(alpha: .2)),
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
             obscureText: !_isPasswordVisible,
-            cursorColor: Colors.grey.withOpacity(.3),
+            cursorColor: Colors.grey.withValues(alpha: .3),
             decoration: InputDecoration(
               suffixIcon: IconButton(
                 onPressed: () {
@@ -187,7 +187,7 @@ class _SetNewPasswordState extends State<SetNewPassword> {
                 },
                 icon: Icon(
                   _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey.withOpacity(.5),
+                  color: Colors.grey.withValues(alpha: .5),
                 ),
               ),
               hintText: 'Enter Password',

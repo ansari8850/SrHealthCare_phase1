@@ -223,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: .3)),
               borderRadius: BorderRadius.circular(12)),
           child: TextField(
             controller: controller,

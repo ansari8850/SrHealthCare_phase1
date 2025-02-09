@@ -13,7 +13,7 @@ import 'package:sr_health_care/Pages/homePage/post_detail_page.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/services/share_plus_service.dart';
-import 'package:sr_health_care/trash/NameNotificationSavedPost.dart';
+import 'package:sr_health_care/trash/name_notification_saved_post.dart';
 import 'package:sr_health_care/trash/drop_down_homepage.dart';
 import 'package:sr_health_care/trash/homefloatingbuttoncreatepost.dart';
 import 'package:sr_health_care/trash/searchandfilterpage.dart';
@@ -178,7 +178,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
         margin: EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: isActive ? buttonColor : buttonColor.withOpacity(.03),
+          color: isActive ? buttonColor : buttonColor.withValues(alpha: .03),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Text(
@@ -324,7 +324,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                   const SizedBox(height: 10),
                   Divider(
                     thickness: .5,
-                    color: Colors.grey.withOpacity(.2),
+                    color: Colors.grey.withValues(alpha: .2),
                   ),
                   Row(
                     children: [
@@ -431,7 +431,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.purple.withOpacity(.03),
+        color: Colors.purple.withValues(alpha: .03),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Row(
@@ -461,7 +461,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
       children: [
         CircleAvatar(
             radius: 15,
-            backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+            backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
             child: Image.asset(
               image,
               height: 15,

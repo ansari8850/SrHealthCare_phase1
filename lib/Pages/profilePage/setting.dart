@@ -40,7 +40,6 @@ class _SettingPageState extends State<SettingPage> {
         ),
       ),
       body: SingleChildScrollView(
-        
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           decoration: BoxDecoration(
@@ -48,7 +47,7 @@ class _SettingPageState extends State<SettingPage> {
             // borderRadius: BorderRadius.circular(16),
             // boxShadow: [
             //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.2),
+            //     color: Colors.grey.withValues(alpha:0.2),
             //     spreadRadius: 1,
             //     blurRadius: 8,
             //     offset: const Offset(0, 3),
@@ -58,7 +57,6 @@ class _SettingPageState extends State<SettingPage> {
           child: Column(
             // mainAxisSize: MainAxisSize.min,
             children: [
-              
               _buildMenuItems(context),
               SizedBox(
                 height: 20,
@@ -128,7 +126,7 @@ class _SettingPageState extends State<SettingPage> {
         }),
         _buildMenuItem('assets/profile/aboutus.png', 'About us', () {
           // Add functionality here if needed
-          Get.to( AboutUs());
+          Get.to(AboutUs());
         }),
         _buildMenuItem('assets/profile/followers.png', 'My followers', () {
           Get.to(const FollowersPage());

@@ -154,7 +154,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
             // margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              // color: Colors.grey.withOpacity(.1),
+              // color: Colors.grey.withValues(alpha:.1),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
             child: Row(
@@ -351,8 +351,8 @@ class _MyFeedPageState extends State<MyFeedPage> {
         border:
             Border.all(color: isSelected ? buttonColor : Colors.transparent),
         color: isSelected
-            ? Colors.grey.withOpacity(.06)
-            : Colors.grey.withOpacity(.2),
+            ? Colors.grey.withValues(alpha: .06)
+            : Colors.grey.withValues(alpha: .2),
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
@@ -447,7 +447,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
               ],
             ),
             const SizedBox(height: 10),
-            Divider(thickness: .5, color: Colors.grey.withOpacity(.2)),
+            Divider(thickness: .5, color: Colors.grey.withValues(alpha: .2)),
 
             // Tags and Comments
             Row(
@@ -480,7 +480,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: buttonColor.withOpacity(0.2),
+        color: buttonColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Text(

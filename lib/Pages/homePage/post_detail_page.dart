@@ -201,7 +201,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
                           child: MySeparator(
-                            color: Colors.grey.withOpacity(.3),
+                            color: Colors.grey.withValues(alpha: .3),
                           ),
                         ),
 
@@ -294,7 +294,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   vertical: 5, horizontal: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: buttonColor.withOpacity(.1),
+                                color: buttonColor.withValues(alpha: .1),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,

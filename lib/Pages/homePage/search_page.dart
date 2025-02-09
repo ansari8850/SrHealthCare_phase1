@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/CustomWidget/expandable_text.dart';
+import 'package:sr_health_care/CustomWidget/modal_bottom_sheet_home.dart';
 import 'package:sr_health_care/CustomWidget/time_ago.dart';
+import 'package:sr_health_care/Pages/Form_pages/field_response_model.dart';
 import 'package:sr_health_care/Pages/homePage/post_detail_page.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/search_api.dart';
@@ -54,9 +57,15 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  Future<void> getData(String search) async {
+  Future<void> getData(
+    String search, {
+    String? fieldId,
+    String? postType,
+    String? date,
+    bool fromFilter = false,
+  }) async {
     postList.clear();
-    if (search.isEmpty) {
+    if (search.isEmpty && !fromFilter) {
       setState(() {
         isLoading = false;
       });
@@ -66,14 +75,20 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = true;
     });
     // _searchHistory.add(SearchModel(searchQuery: search));
-    final (error, data) = await PostService()
-        .fetchPosts(search: search, currentPage: 1, noOfRec: 10);
+    final (error, data) = await PostService().fetchPosts(
+      search: search,
+      currentPage: 1,
+      noOfRec: 10,
+      fieldId: fieldId ?? '',
+      postType: postType ?? '',
+      date: date ?? '',
+    );
     if (error?.isNotEmpty == true || data == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error ?? 'Something went wrong')),
       );
     }
-    if (searchController.text.isNotEmpty) {
+    if (searchController.text.isNotEmpty || fromFilter) {
       postList = data?.postList ?? [];
     }
     setState(() {
@@ -204,23 +219,43 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                         ),
                       ),
-                      // const SizedBox(
-                      //   width: 10,
-                      // ),
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     showModalBottomSheet(
-                      //         context: context,
-                      //         builder: (_) => const SortFilterBottomSheet());
-                      //   },
-                      //   child: CircleAvatar(
-                      //     backgroundColor: whiteColor,
-                      //     child: Image.asset(
-                      //       'assets/homepage/filter.png',
-                      //       height: 18,
-                      //     ),
-                      //   ),
-                      // )
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (_) => SortFilterBottomSheet(
+                              onApplyFilter: (selectedFilters) {
+                                getData(
+                                  fromFilter: true,
+                                  searchController.text,
+                                  postType: (selectedFilters['Type']
+                                          ?.firstOrNull as FieldTypeModel?)
+                                      ?.name,
+                                  date: selectedFilters['Date']?.firstOrNull !=
+                                          null
+                                      ? DateFormat('yyyy-MM-dd')
+                                          .format(DateTime.now())
+                                      : '',
+                                  fieldId: (selectedFilters['Field']
+                                          ?.firstOrNull as FieldTypeModel?)
+                                      ?.id
+                                      ?.toString(),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: whiteColor,
+                          child: Image.asset(
+                            'assets/homepage/filter.png',
+                            height: 18,
+                          ),
+                        ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -280,10 +315,10 @@ class _SearchPageState extends State<SearchPage> {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 5, horizontal: 10),
                                 decoration: BoxDecoration(
-                                  color: buttonColor.withOpacity(.1),
+                                  color: buttonColor.withValues(alpha: .1),
                                   borderRadius: BorderRadius.circular(15),
                                   border: Border.all(
-                                    color: Colors.grey.withOpacity(.4),
+                                    color: Colors.grey.withValues(alpha: .4),
                                     width: .6,
                                   ),
                                 ),
@@ -421,7 +456,7 @@ class _SearchPageState extends State<SearchPage> {
                                     const SizedBox(height: 10),
                                     Divider(
                                       thickness: .5,
-                                      color: Colors.grey.withOpacity(.2),
+                                      color: Colors.grey.withValues(alpha: .2),
                                     ),
                                     Row(
                                       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -469,7 +504,7 @@ class _SearchPageState extends State<SearchPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.purple.withOpacity(.03),
+        color: Colors.purple.withValues(alpha: .03),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Row(
@@ -499,7 +534,7 @@ class _SearchPageState extends State<SearchPage> {
       children: [
         CircleAvatar(
             radius: 15,
-            backgroundColor: const Color(0xffBAF0F4).withOpacity(.4),
+            backgroundColor: const Color(0xffBAF0F4).withValues(alpha: .4),
             child: Image.asset(
               image,
               height: 15,

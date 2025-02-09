@@ -40,8 +40,8 @@ class CreatePostService {
             "thumbnail": thumbnail,
             "auto_delete_date": autodeletedate,
             "status": 'Pending',
-            "title" :title,
-            "post_id" :postId
+            "title": title,
+            "post_id": postId
           }));
       final jsonResponse = jsonDecode(response.body);
       log(response.body);
@@ -60,25 +60,26 @@ class CreatePostService {
     return (message);
   }
 
-Future<FiledResponseModel?> fethInitialData(
+  Future<FiledResponseModel?> fethInitialData(
     String type,
   ) async {
     final token = SharedPreferenceHelper().getAccessToken();
     final url = Uri.parse(
- "https://backend.srhealthcarecommunity.com/api/master/list?fy=2024&noofrec=10&currentpage=1&type=$type", 
-   );
-    
+      "https://backend.srhealthcarecommunity.com/api/master/list?fy=2024&noofrec=10&currentpage=1&type=$type",
+    );
+
     String message = '';
     try {
-      final response = await http.post(url,
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-          );
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
       final jsonResponse = jsonDecode(response.body);
       log(response.body);
-      if (response.statusCode == 200 ) {
+      if (response.statusCode == 200) {
         final data = FiledResponseModel.fromJson(jsonResponse);
 
         return data;
@@ -92,7 +93,7 @@ Future<FiledResponseModel?> fethInitialData(
     }
     return (null);
   }
- 
+
   /// **Delete Post Service**
   Future<String?> deletePost(int id) async {
     final token = SharedPreferenceHelper().getAccessToken();
