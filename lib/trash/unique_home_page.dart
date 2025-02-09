@@ -328,15 +328,11 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                   ),
                   Row(
                     children: [
+                      // In your post list item:
                       Obx(() {
-                        // Use the isPostSaved method to check if the post is saved
-                        bool isSaved =
+                        final isSaved =
                             savepostController.isPostSaved(post.id ?? -1);
-
-                        return SaveButton(
-                          postId: post.id ?? -1,
-                          isSaved: isSaved,
-                        );
+                        return SaveButton(postId: post.id ?? -1);
                       }),
                       const SizedBox(
                         width: 15,

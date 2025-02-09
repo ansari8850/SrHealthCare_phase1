@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -462,8 +460,6 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 )
               ],
             ),
-
-           
           ],
         ),
       ),
@@ -488,6 +484,4 @@ class _MyFeedPageState extends State<MyFeedPage> {
       ),
     );
   }
-
-
 }
