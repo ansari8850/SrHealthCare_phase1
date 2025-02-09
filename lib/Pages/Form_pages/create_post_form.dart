@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/Pages/Form_pages/create_post_service.dart';
@@ -12,6 +10,7 @@ import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
 import 'package:sr_health_care/services/image_picker_service.dart';
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
@@ -21,13 +20,12 @@ class CreatePostPage extends StatefulWidget {
 }
 
 class _CreatePostPageState extends State<CreatePostPage> {
-  String? _selectedField;
-  DateTime? _postingDate;
+  VideoPlayerController? _videoController;
   DateTime? _deleteDate;
   bool _isAutoDeleteEnabled = false;
   File? selectedFile;
   bool isVideo = false;
-  int? selectedFieldId; // Add this to your state
+  int? selectedFieldId;
 
   TextEditingController locationController = TextEditingController();
   TextEditingController fieldController = TextEditingController();
@@ -102,33 +100,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDropdown(
-                label: 'Location',
-                hint: 'Type Location',
-                controller: locationController,
-                items: locationList.map((e) => e.name.toString()).toList(),
-                onChanged: (value) {
-                  // debugger();s
-                  // fieldController.clear();
-
-                  selectedLocationFields = fieldList
-                      .where((e) =>
-                          e.location.toString().toLowerCase() ==
-                          value.toLowerCase())
-                      .toList();
-                  // setState(() {});
-
-                  typeController.clear();
-
-                  selectedLocationTypes = postTypeList
-                      .where((e) =>
-                          e.location.toString().toLowerCase() ==
-                          value.toLowerCase())
-                      .toList();
-                  setState(() {});
-                }),
-
+              label: 'Location',
+              hint: 'Type Location',
+              controller: locationController,
+              items: locationList.map((e) => e.name.toString()).toList(),
+              onChanged: (value) {
+                selectedLocationFields = fieldList
+                    .where((e) =>
+                        e.location.toString().toLowerCase() ==
+                        value.toLowerCase())
+                    .toList();
+                typeController.clear();
+                selectedLocationTypes = postTypeList
+                    .where((e) =>
+                        e.location.toString().toLowerCase() ==
+                        value.toLowerCase())
+                    .toList();
+                setState(() {});
+              },
+            ),
             const SizedBox(height: 16),
-            // _buildFieldDropdown(),
             _buildDropdown(
               label: 'Field',
               hint: 'Select Field Type',
@@ -156,6 +147,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     .map((e) => e.name.toString())
                     .toList(),
                 onChanged: (value) {}),
+
             // const SizedBox(height: 16),
             // _buildDateField('Posting Date', 'Select Date', () {
             //   _pickDate(context, (date) {
@@ -205,31 +197,36 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  Widget _buildDropdown(
-      {required String label,
-      required String hint,
-      required TextEditingController controller,
-      required List<String> items,
-      required Function(String) onChanged}) {
+  Widget _buildDropdown({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    required List<String> items,
+    required Function(String) onChanged,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-            text: TextSpan(
-                text: label,
-                style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: blackColor),
-                children: [
+          text: TextSpan(
+            text: label,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: blackColor,
+            ),
+            children: [
               TextSpan(
                 text: "*",
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.red),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.red,
+                ),
               )
-            ])),
+            ],
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -237,47 +234,196 @@ class _CreatePostPageState extends State<CreatePostPage> {
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: DropdownButtonFormField<String>(
-            isExpanded: true,
-            value: controller.text.isNotEmpty && items.contains(controller.text)
-                ? controller.text
-                : null,
-            style: GoogleFonts.poppins(
-                color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w400),
-            borderRadius: BorderRadius.circular(12),
-            dropdownColor: Colors.white,
-            // value: controller.text.isNotEmpty ? controller.text : null,
-            items: items.toSet().map((String value) {
-              return DropdownMenuItem(
-                value: value,
-                child: Text(
-                  value,
+          child: label == 'Location'
+              ? InkWell(
+                  onTap: () {
+                    _showSearchDialog(context, controller, items, onChanged);
+                  },
+                  child: IgnorePointer(
+                    child: TextFormField(
+                      controller: controller,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: hint,
+                        hintStyle: GoogleFonts.poppins(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: InputBorder.none,
+                        suffixIcon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  value: controller.text.isNotEmpty &&
+                          items.contains(controller.text)
+                      ? controller.text
+                      : null,
                   style: GoogleFonts.poppins(
-                      fontSize: 14,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: GoogleFonts.poppins(
+                      color: Colors.grey,
+                      fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black),
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  items: items.map((String value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.text = value;
+                      onChanged(value);
+                    }
+                  },
                 ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              // debugger();
-              if (value != null) {
-                onChanged.call(value);
-              }
-              controller.text = value.toString();
-            },
-            // controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: GoogleFonts.poppins(
-                  color: Colors.grey.shade100,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400),
-              border: InputBorder.none,
-            ),
-          ),
         ),
       ],
+    );
+  }
+
+  void _showSearchDialog(
+    BuildContext context,
+    TextEditingController controller,
+    List<String> items,
+    Function(String) onChanged,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        String searchQuery = '';
+        List<String> filteredItems = List.from(items);
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: whiteColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextField(
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 12),
+                          hintText: 'Search...',
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          prefixIcon:
+                              Icon(Icons.search, color: Colors.grey.shade600),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: buttonColor),
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value.toLowerCase();
+                            filteredItems = items
+                                .where((item) =>
+                                    item.toLowerCase().contains(searchQuery))
+                                .toList();
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: filteredItems.length,
+                        separatorBuilder: (context, index) =>
+                            Divider(height: 1, color: Colors.grey.shade200),
+                        itemBuilder: (context, index) {
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                controller.text = filteredItems[index];
+                                onChanged(filteredItems[index]);
+                                Navigator.pop(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
+                                child: Text(
+                                  filteredItems[index],
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    if (filteredItems.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'No results found',
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -333,6 +479,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
+  Future<void> _initializeVideo(File videoFile) async {
+    // Dispose any previous controller
+    _videoController?.dispose();
+    _videoController = VideoPlayerController.file(videoFile);
+    await _videoController!.initialize();
+    // Optionally auto-play the video once initialized:
+    _videoController!.setLooping(true);
+    _videoController!.play();
+    setState(() {});
+  }
+
   Widget _buildFileUpload(
       Function(File?) onPickImage, Function(File?) onPickVideo) {
     return GestureDetector(
@@ -347,13 +504,13 @@ class _CreatePostPageState extends State<CreatePostPage> {
               width: Get.width,
               child: Column(
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'Select which File you want to upload',
                     style: GoogleFonts.poppins(
                         fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -362,24 +519,33 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           onTap: () async {
                             final image = await ImagePickerService()
                                 .pickImageFromGallery();
+                            if (image != null) {
+                              // If an image (or GIF) is selected, dispose any video controller.
+                              _videoController?.dispose();
+                              setState(() {
+                                selectedFile = image;
+                                isVideo = false;
+                              });
+                            }
                             onPickImage(image);
                             Navigator.pop(context);
                           },
                           child: Container(
-                              margin: EdgeInsets.only(left: 10, right: 5),
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Text(
-                                'Image',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )),
+                            margin: const EdgeInsets.only(left: 10, right: 5),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Text(
+                              'Image',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       Expanded(
@@ -387,24 +553,33 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           onTap: () async {
                             final video = await ImagePickerService()
                                 .pickVideoFromGallery();
+                            if (video != null) {
+                              // Initialize the video controller for preview.
+                              await _initializeVideo(video);
+                              setState(() {
+                                selectedFile = video;
+                                isVideo = true;
+                              });
+                            }
                             onPickVideo(video);
                             Navigator.pop(context);
                           },
                           child: Container(
-                              margin: EdgeInsets.only(right: 10, left: 5),
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Text(
-                                'Video',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )),
+                            margin: const EdgeInsets.only(right: 10, left: 5),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Text(
+                              'Video',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     ],
@@ -433,67 +608,94 @@ class _CreatePostPageState extends State<CreatePostPage> {
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Center(
-              child: selectedFile != null
-                  ? isVideo
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Image.asset(
-                            //   'assets/personalize/video.png',
-                            //   fit: BoxFit.cover,
-                            //   // width: double.infinity,
-                            //   height: 100,
-                            // ),
-                            Icon(Icons.play_circle_fill,
-                                size: 50, color: Colors.black),
-                          ],
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            selectedFile!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
+            child: selectedFile != null
+                ? Stack(
+                    children: [
+                      // Preview content:
+                      isVideo
+                          ? _videoController != null &&
+                                  _videoController!.value.isInitialized
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: AspectRatio(
+                                    aspectRatio:
+                                        _videoController!.value.aspectRatio,
+                                    child: VideoPlayer(_videoController!),
+                                  ),
+                                )
+                              : const Center(child: CircularProgressIndicator())
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                selectedFile!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                            ),
+                      // Positioned label showing the file format
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                        )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.cloud_upload,
-                            size: 40, color: Colors.grey),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
-                            'Browse and choose the files you want to upload from your Device',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w400),
+                            isVideo
+                                ? 'Video'
+                                : selectedFile!.path
+                                        .toLowerCase()
+                                        .endsWith('.gif')
+                                    ? 'GIF'
+                                    : 'Image',
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: const Icon(Icons.add,
-                                size: 20, color: Colors.white)),
-                      ],
-                    ),
-            ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.cloud_upload,
+                          size: 40, color: Colors.grey),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Browse and choose the files you want to upload from your Device',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Icon(Icons.add,
+                            size: 20, color: Colors.white),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
     );
   }
 
-  // Description Field
   Widget _buildDescriptionField(TextEditingController controller) {
     return TextField(
       controller: controller,
@@ -512,7 +714,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  // Auto Delete Toggle
   Widget _buildAutoDeleteToggle() {
     return Row(
       children: [
@@ -549,7 +750,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  // Next Button
   Widget _buildNextButton() {
     return SizedBox(
       width: double.infinity,
@@ -566,16 +766,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
           //   fieldName: fieldController.text,
           //   type: typeController.text,
           // );
-          final selectedField =fieldList.firstWhere((item)=> item.name ==fieldController.text , orElse: () => FieldTypeModel(),);
-          final fieldId =selectedField.id;
-          final selectedPostType =  postTypeList.firstWhere((item)=>item.name == typeController.text , orElse :()=> FieldTypeModel());
+          final selectedField = fieldList.firstWhere(
+            (item) => item.name == fieldController.text,
+            orElse: () => FieldTypeModel(),
+          );
+          final fieldId = selectedField.id;
+          final selectedPostType = postTypeList.firstWhere(
+              (item) => item.name == typeController.text,
+              orElse: () => FieldTypeModel());
           final postTypeId = selectedPostType.id;
 
           final post = PostModel(
               location: locationController.text,
               fieldName: PostType(fieldName: fieldController.text).fieldName,
               fieldId: fieldId.toString(),
-              postTypeId:postTypeId.toString() ,
+              postTypeId: postTypeId.toString(),
               postType: PostType(type: typeController.text),
               createdAt: DateTime.now(),
               autoDeleteDate: _deleteDate ?? DateTime.now(),
@@ -596,7 +801,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
-  // Date Picker Function
   Future<void> _pickDate(
       BuildContext context, Function(DateTime) onDatePicked) async {
     // Pick a date
@@ -629,68 +833,4 @@ class _CreatePostPageState extends State<CreatePostPage> {
       }
     }
   }
-
-  // Dropdown for selecting field type (1 to 8)
-  // Widget _buildFieldDropdown() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       RichText(
-  //           text: TextSpan(
-  //               text: 'Field',
-  //               style: GoogleFonts.poppins(
-  //                   fontSize: 14,
-  //                   fontWeight: FontWeight.w400,
-  //                   color: blackColor),
-  //               children: [
-  //             TextSpan(
-  //               text: "*",
-  //               style: GoogleFonts.poppins(
-  //                   fontSize: 14,
-  //                   fontWeight: FontWeight.w400,
-  //                   color: Colors.red),
-  //             )
-  //           ])),
-  //       const SizedBox(height: 8),
-  //       Container(
-  //         padding: const EdgeInsets.symmetric(horizontal: 12),
-  //         decoration: BoxDecoration(
-  //           border: Border.all(color: Colors.grey.shade300),
-  //           borderRadius: BorderRadius.circular(8),
-  //         ),
-  //         child: DropdownButton<String>(
-  //           borderRadius: BorderRadius.circular(12),
-  //           dropdownColor: Colors.white,
-  //           value: _selectedField,
-  //           isExpanded: true,
-  //           underline: const SizedBox(),
-  //           hint: Text(
-  //             'Select Field Type',
-  //             style: GoogleFonts.poppins(
-  //                 color: Colors.grey.shade400,
-  //                 fontSize: 14,
-  //                 fontWeight: FontWeight.w400),
-  //           ),
-  //           items: fieldList.map((FieldTypeModel value) {
-  //             return DropdownMenuItem<String>(
-  //               value: value.id.toString(),
-  //               child: Text(
-  //                 value.name.toString(),
-  //                 style: GoogleFonts.poppins(
-  //                     fontSize: 14,
-  //                     fontWeight: FontWeight.w400,
-  //                     color: Colors.black),
-  //               ),
-  //             );
-  //           }).toList(),
-  //           onChanged: (value) {
-  //             setState(() {
-  //               _selectedField = value;
-  //             });
-  //           },
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 }

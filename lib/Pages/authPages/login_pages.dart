@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +7,6 @@ import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
 import 'package:sr_health_care/services/api_services.dart';
-// Import your ApiService class
 
 class LoginPages extends StatefulWidget {
   const LoginPages({super.key});
@@ -78,9 +76,6 @@ class _LoginPagesState extends State<LoginPages> {
     }
   }
 
-
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +95,7 @@ class _LoginPagesState extends State<LoginPages> {
                 size: 20,
                 color: Color(0xff010007),
                 weight: FontWeight.w700),
-            const SizedBox(height: 8), 
+            const SizedBox(height: 8),
             const CustomText(
                 text:
                     'Log In to enjoy healthy posting and events\n around the world ',
@@ -244,7 +239,6 @@ class _LoginPagesState extends State<LoginPages> {
             SizedBox(
               height: 20,
             ),
-          
           ],
         ),
       ),
