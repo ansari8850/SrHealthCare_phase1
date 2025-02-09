@@ -16,10 +16,10 @@ import 'package:sr_health_care/services/share_plus_service.dart';
 import 'package:sr_health_care/services/whatsapp_service.dart';
 
 class FollowerProfile extends StatefulWidget {
-  String postUsedId;
-  bool? isAboveFollowing;
-  int isSaved = 0;
-  FollowerProfile(
+  final String postUsedId;
+  final bool? isAboveFollowing;
+  final int isSaved;
+  const FollowerProfile(
       {super.key,
       required this.postUsedId,
       this.isAboveFollowing,
@@ -30,10 +30,10 @@ class FollowerProfile extends StatefulWidget {
 }
 
 class _FollowerProfileState extends State<FollowerProfile> {
-  bool _isExpanded = false;
+  // final bool _isExpanded = false;
   SingleUserPostDetail? userDetailPost;
   bool isFollowing = false;
-  int _currentUserID = SharedPreferenceHelper().getUserData()?.id ?? 0;
+  // final int _currentUserID = SharedPreferenceHelper().getUserData()?.id ?? 0;
 
   @override
   void initState() {

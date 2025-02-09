@@ -15,7 +15,6 @@ import 'package:sr_health_care/Pages/homePage/servicesModel/search_history_model
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
-import 'package:sr_health_care/services/post_save_and_unsave_service.dart';
 import 'package:sr_health_care/services/share_plus_service.dart';
 
 import 'servicesModel/home_api_service.dart';
@@ -181,9 +180,10 @@ class _SearchPageState extends State<SearchPage> {
                                 getData(value);
                               });
                               newDeBouncer(() {
-                                if (value.length > 3)
+                                if (value.length > 3) {
                                   _searchHistory
                                       .add(SearchModel(searchQuery: value));
+                                }
                                 setState(() {});
                               });
                             },
@@ -265,23 +265,13 @@ class _SearchPageState extends State<SearchPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      if (_searchHistory == null) // If no recent searches
-                        Center(
-                          child: Text(
-                            'No recent searches',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
                       // Display the list of recent searches in a Wrap widget
                       Container(
                         child: Wrap(
                           runAlignment: WrapAlignment.start,
                           spacing: 10, // Horizontal space between items
                           runSpacing: 10, // Vertical space between lines
-                          children: _searchHistory?.map((search) {
+                          children: _searchHistory.map((search) {
                                 return Container(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 5, horizontal: 10),
@@ -394,7 +384,7 @@ class _SearchPageState extends State<SearchPage> {
                                         ),
                                         TimeAgoCustomWidget(
                                           createdAt:
-                                              post?.createdAt.toString() ?? ' ',
+                                              post.createdAt.toString() ?? ' ',
                                           size: 10,
                                         )
                                       ],

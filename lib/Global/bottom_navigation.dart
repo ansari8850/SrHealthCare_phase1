@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
-import 'package:sr_health_care/Pages/homePage/main_home_page.dart';
 import 'package:sr_health_care/Pages/homePage/search_page.dart';
 import 'package:sr_health_care/Pages/myfeed/myfeed_main.dart';
 import 'package:sr_health_care/Pages/profilePage/setting.dart';

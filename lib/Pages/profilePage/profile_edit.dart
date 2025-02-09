@@ -215,7 +215,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                             onTap: () async {
                               final image = await ImagePickerService()
                                   .pickImageFromGallery();
-                              File("${image}");
+                              File("$image");
                               setState(() {
                                 _image = image;
                               });

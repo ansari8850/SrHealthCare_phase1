@@ -7,7 +7,6 @@ import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
 import 'package:sr_health_care/Pages/authPages/login_pages.dart';
 import 'package:sr_health_care/Pages/profilePage/about_us.dart';
 import 'package:sr_health_care/Pages/profilePage/contact_us.dart';
-import 'package:sr_health_care/Pages/profilePage/help.dart';
 import 'package:sr_health_care/Pages/profilePage/my_followers.dart';
 import 'package:sr_health_care/Pages/profilePage/profile_update.dart';
 import 'package:sr_health_care/Pages/profilePage/profile_visibility.dart';

@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:sr_health_care/Pages/homePage/servicesModel/api_response_model.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/filter_home_page_model.dart';
-import 'package:sr_health_care/Pages/homePage/servicesModel/filter_post_type_model.dart';
 import 'package:sr_health_care/Pages/homePage/servicesModel/post_model_class.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sr_health_care/CustomWidget/modal_bottom_sheet_home.dart';
 import 'package:sr_health_care/Pages/homePage/search_page.dart';
-import 'package:sr_health_care/const/colors.dart';
 
 class SearchAndFilterWidget extends StatelessWidget {
   const SearchAndFilterWidget({

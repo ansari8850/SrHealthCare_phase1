@@ -12,7 +12,7 @@ class FollowButton extends StatelessWidget {
   final User user; // Replace with your actual user model
   final VoidCallback onFollowStatusChange;
 
-  FollowButton({required this.user, required this.onFollowStatusChange});
+  const FollowButton({super.key, required this.user, required this.onFollowStatusChange});
 
   @override
   Widget build(BuildContext context) {

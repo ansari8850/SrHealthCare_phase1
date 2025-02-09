@@ -17,7 +17,7 @@ class SearchApi {
   final String baseUrl = 'https://backend.srhealthcarecommunity.com/api';
 
  Future<SearchHistoryModel?> searchRecentHistory() async {
-  final token = await SharedPreferenceHelper().getAccessToken(); // Ensure this returns a Future.
+  final token = SharedPreferenceHelper().getAccessToken(); // Ensure this returns a Future.
   final url = Uri.parse('$baseUrl/search/history/list');
 
   try {
@@ -46,7 +46,7 @@ class SearchApi {
 }
 
 Future<void> deleteSearchHistory(BuildContext context) async {
-    final token = await SharedPreferenceHelper().getAccessToken(); // Ensure this returns a Future.
+    final token = SharedPreferenceHelper().getAccessToken(); // Ensure this returns a Future.
     final url = Uri.parse('$baseUrl/search/history/clear');
 
     try {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sr_health_care/CustomWidget/app_cache_network_image.dart';
@@ -15,7 +14,7 @@ import 'package:sr_health_care/services/share_plus_service.dart';
 class MyFeedDetail extends StatefulWidget {
   final int id;
 
-  MyFeedDetail({super.key, required this.id});
+  const MyFeedDetail({super.key, required this.id});
 
   @override
   State<MyFeedDetail> createState() => _MyFeedDetailState();

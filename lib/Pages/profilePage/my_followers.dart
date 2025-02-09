@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:sr_health_care/Pages/followers/follower_profile.dart';
 import 'package:sr_health_care/Pages/profilePage/modelandservice/following_model.dart';
 import 'package:sr_health_care/Pages/profilePage/modelandservice/user_profile_service.dart';
 import 'package:sr_health_care/const/colors.dart';
-import 'package:http/http.dart' as http;
 
 class FollowersPage extends StatefulWidget {
   const FollowersPage({super.key});
@@ -166,7 +164,7 @@ class _FollowersPageState extends State<FollowersPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      FollowerProfile(postUsedId: (user?.id ?? 0 ).toString(),isAboveFollowing:true,)
+                      FollowerProfile(postUsedId: (user.id ?? 0 ).toString(),isAboveFollowing:true,)
                 ),
               );
               if(shouldReferesh ==true)
@@ -272,7 +270,7 @@ class _FollowersPageState extends State<FollowersPage> {
                 child: ListTile(
                   onTap: (){
                     Get.to(
-                  FollowerProfile(postUsedId: (user?.id ?? 0 ).toString(),)
+                  FollowerProfile(postUsedId: (user.id ?? 0 ).toString(),)
 
                     );
                   },
