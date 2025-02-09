@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,7 +29,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
 
   /// Fetch saved posts
   Future<void> _fetchSavedPosts() async {
-    setState(() => isLoading = true); 
+    setState(() => isLoading = true);
     try {
       final result =
           await PostSaveAndUnsaveService().fetchSavedPosts(context: context);
@@ -48,8 +47,6 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
       setState(() => isLoading = false);
     }
   }
-
- 
 
   void _unsavePost(int index) async {
     await PostSaveAndUnsaveService().removeSavedPost(
@@ -100,145 +97,154 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
         elevation: 0,
         // leading: const Icon(Icons.arrow_back, color: Colors.black),
       ),
-      body: savedPosts.isEmpty
+      body: isLoading
           ? Center(
-              child: Text(
-                'No Posts Saved',
-                style: GoogleFonts.poppins(
-                    fontSize: 16, color: Colors.grey.shade600),
-              ),
+              child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.only(top: 10 , bottom: 0),
-              itemCount: savedPosts.length,
-              itemBuilder: (context, index) {
-                final post = savedPosts[index];
-                return Container(
-                  // height: Get.height * 0.65,
-                  margin: const EdgeInsets.only(bottom: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade300,
-                        offset: const Offset(0, 4),
-                        blurRadius: 9,
-                        spreadRadius: 0.1,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(5),
+          : savedPosts.isEmpty
+              ? Center(
+                  child: Text(
+                    'No Posts Saved',
+                    style: GoogleFonts.poppins(
+                        fontSize: 16, color: Colors.grey.shade600),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.only(left: 10, right: 5),
-                        leading: CircleAvatar(
-                          radius: 26,
-                          backgroundColor: buttonColor,
-                          child: AppCacheNetworkImage(imageUrl: post.post?.user?.photo?.url , fit: BoxFit.cover, borderRadius: 50, width: 100,  height: 100,),
-                        ),
-                        // AppCacheNetworkImage(
-                        //   imageUrl: post.user?.photo?.url  ??'',
-                        //   borderRadius: 50,
-                        //   fit: BoxFit.cover,
-                        // ),
-                        title: Text(
-                          // '${post.user?.name ?? ''}  ${post.user?.lastName ?? ''}',
-                          // '${post.user?.name} ${post.user?.lastName}',
-                          '${post.post?.userName}',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 10, bottom: 0),
+                  itemCount: savedPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = savedPosts[index];
+                    return Container(
+                      // height: Get.height * 0.65,
+                      margin: const EdgeInsets.only(bottom: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade300,
+                            offset: const Offset(0, 4),
+                            blurRadius: 9,
+                            spreadRadius: 0.1,
                           ),
-                        ),
-                        subtitle: Text(
-                          // post.user?.companyName ?? '',
-                          '${post.post?.user?.department}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
+                        ],
+                        borderRadius: BorderRadius.circular(5),
                       ),
-                    
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: AppCacheNetworkImage(
-                            imageUrl: post.post?.thumbnail,
-                            fit: BoxFit.cover,
-                            height: 180,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: ExpandableText(
-                          text: 
-                          post.post?.description ?? '',
-                          // style: GoogleFonts.poppins(fontSize: 12),
-                          color: Colors.black,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            if (post.post?.fieldName != null)
-                              
-                            _buildTag(post.post?.fieldName??''),
-                            const SizedBox(width: 10),
-                            if (post.post?.postType != null)
-                            _buildTag(post.post?.postType??''),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Divider(thickness: 0.5, color: Colors.grey.shade300),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => _unsavePost(index),
-                              child: _buildActionButton(
-                                  'assets/myfeed/save.png', 'Unsave'),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.only(left: 10, right: 5),
+                            leading: CircleAvatar(
+                              radius: 26,
+                              backgroundColor: buttonColor,
+                              child: AppCacheNetworkImage(
+                                imageUrl: post.post?.user?.photo?.url,
+                                fit: BoxFit.cover,
+                                borderRadius: 50,
+                                width: 100,
+                                height: 100,
+                              ),
                             ),
-                            SizedBox(width: 10,),
-                            GestureDetector(
-                              onTap: (){
-                                ShareService().shareText('Sharing Post ${post.post?.description ?? ''}');
-                              },
-                              child: _buildActionButton(
-                                  'assets/homepage/share.png', 'Share'),
+                            // AppCacheNetworkImage(
+                            //   imageUrl: post.user?.photo?.url  ??'',
+                            //   borderRadius: 50,
+                            //   fit: BoxFit.cover,
+                            // ),
+                            title: Text(
+                              // '${post.user?.name ?? ''}  ${post.user?.lastName ?? ''}',
+                              // '${post.user?.name} ${post.user?.lastName}',
+                              '${post.post?.userName}',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
                             ),
-                            Spacer(),
-                            Row(
+                            subtitle: Text(
+                              // post.user?.companyName ?? '',
+                              '${post.post?.user?.department}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: AppCacheNetworkImage(
+                                imageUrl: post.post?.thumbnail,
+                                fit: BoxFit.cover,
+                                height: 180,
+                                width: double.infinity,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: ExpandableText(
+                              text: post.post?.description ?? '',
+                              // style: GoogleFonts.poppins(fontSize: 12),
+                              color: Colors.black,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
                               children: [
-                                Image.asset('assets/homepage/clock.png',
-                                    height: 14),
-                                const SizedBox(width: 5),
-                                TimeAgoCustomWidget(
-                                  size: 10,
-                                  createdAt:
-                                      post.post?.createdAt.toString() ?? '',
-                                ),
-                              
+                                if (post.post?.fieldName != null)
+                                  _buildTag(post.post?.fieldName ?? ''),
+                                const SizedBox(width: 10),
+                                if (post.post?.postType != null)
+                                  _buildTag(post.post?.postType ?? ''),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 10),
+                          Divider(thickness: 0.5, color: Colors.grey.shade300),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _unsavePost(index),
+                                  child: _buildActionButton(
+                                      'assets/myfeed/save.png', 'Unsave'),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    ShareService().shareText(
+                                        'Sharing Post ${post.post?.description ?? ''}');
+                                  },
+                                  child: _buildActionButton(
+                                      'assets/homepage/share.png', 'Share'),
+                                ),
+                                Spacer(),
+                                Row(
+                                  children: [
+                                    Image.asset('assets/homepage/clock.png',
+                                        height: 14),
+                                    const SizedBox(width: 5),
+                                    TimeAgoCustomWidget(
+                                      size: 10,
+                                      createdAt:
+                                          post.post?.createdAt.toString() ?? '',
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
     );
   }
 

@@ -256,7 +256,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                           child: AppCacheNetworkImage(
                             width: Get.width,
                             borderRadius: 50,
-                            imageUrl: post?.user?.photo?.url ?? '',
+                            imageUrl: post.user?.photo?.url ?? '',
                             height: Get.height,
                           ),
                         ),
@@ -267,14 +267,14 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              post?.userName ?? '',
+                              post.userName ?? '',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
-                              post?.user?.department ?? '',
+                              post.user?.department ?? '',
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 color: Colors.grey.shade600,
@@ -304,7 +304,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AppCacheNetworkImage(
-                      imageUrl: post?.thumbnail ?? '',
+                      imageUrl: post.thumbnail ?? '',
                       fit: BoxFit.cover,
                       height: 180,
                       width: double.infinity,
@@ -312,14 +312,14 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                   ),
                   const SizedBox(height: 10),
                   ExpandableText(
-                    text: post?.description ?? '',
+                    text: post.description ?? '',
                     trimLength: 100,
                   ),
                   const SizedBox(height: 10),
-                  if (post?.fieldName != null)
+                  if (post.fieldName != null)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: _buildChip(post?.fieldName ?? ''),
+                      child: _buildChip(post.fieldName ?? ''),
                     ),
                   const SizedBox(height: 10),
                   Divider(
@@ -340,7 +340,7 @@ class _UniqueHomePageState extends State<UniqueHomePage> {
                       GestureDetector(
                         onTap: () {
                           ShareService().shareText(
-                              'Hello This Is My Post on Sr HealthCare ${post?.thumbnail}');
+                              'Hello This Is My Post on Sr HealthCare ${post.thumbnail}');
                         },
                         child:
                             _buildAction('assets/homepage/share.png', "Share"),
