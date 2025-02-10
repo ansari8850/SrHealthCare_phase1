@@ -96,6 +96,32 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  void _sortPosts(Map<String, String> selectedSorts) {
+    if (selectedSorts.isEmpty) return;
+    if (selectedSorts['Time'] == 'Oldest First') {
+      // Sort posts in ascending order (oldest to newest)
+      postList.sort((a, b) {
+        // Handle null createdAt
+        if (a.createdAt == null && b.createdAt == null) return 0;
+        if (a.createdAt == null) return 1; // Push null values to the end
+        if (b.createdAt == null) return -1; // Push null values to the end
+        return a.createdAt!
+            .compareTo(b.createdAt!); // Safe to use non-nullable comparison
+      });
+    } else if (selectedSorts['Time'] == 'Newest First') {
+      // Sort posts in descending order (newest to oldest)
+      postList.sort((a, b) {
+        // Handle null createdAt
+        if (a.createdAt == null && b.createdAt == null) return 0;
+        if (a.createdAt == null) return 1; // Push null values to the end
+        if (b.createdAt == null) return -1; // Push null values to the end
+        return b.createdAt!
+            .compareTo(a.createdAt!); // Compare in reverse (newest to oldest)
+      });
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -227,23 +253,30 @@ class _SearchPageState extends State<SearchPage> {
                           showModalBottomSheet(
                             context: context,
                             builder: (_) => SortFilterBottomSheet(
-                              onApplyFilter: (selectedFilters) {
-                                getData(
-                                  fromFilter: true,
-                                  searchController.text,
-                                  postType: (selectedFilters['Type']
-                                          ?.firstOrNull as FieldTypeModel?)
-                                      ?.name,
-                                  date: selectedFilters['Date']?.firstOrNull !=
-                                          null
-                                      ? DateFormat('yyyy-MM-dd')
-                                          .format(DateTime.now())
-                                      : '',
-                                  fieldId: (selectedFilters['Field']
-                                          ?.firstOrNull as FieldTypeModel?)
-                                      ?.id
-                                      ?.toString(),
-                                );
+                              onApplyFilter: (selectedFilters, selectedSorts) {
+                                if (selectedFilters.isNotEmpty) {
+                                  getData(
+                                    fromFilter: true,
+                                    searchController.text,
+                                    postType: (selectedFilters['Type']
+                                            ?.firstOrNull as FieldTypeModel?)
+                                        ?.name,
+                                    date:
+                                        selectedFilters['Date']?.firstOrNull !=
+                                                null
+                                            ? DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now())
+                                            : '',
+                                    fieldId: (selectedFilters['Field']
+                                            ?.firstOrNull as FieldTypeModel?)
+                                        ?.id
+                                        ?.toString(),
+                                  ).then((_) {
+                                    _sortPosts(selectedSorts);
+                                  });
+                                } else {
+                                  _sortPosts(selectedSorts);
+                                }
                               },
                             ),
                           );

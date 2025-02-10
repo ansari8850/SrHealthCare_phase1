@@ -6,7 +6,8 @@ import 'package:sr_health_care/const/colors.dart';
 
 class SortFilterBottomSheet extends StatefulWidget {
   const SortFilterBottomSheet({super.key, required this.onApplyFilter});
-  final void Function(Map<String, List>) onApplyFilter;
+  final void Function(Map<String, List> filters, Map<String, String> sorts)
+      onApplyFilter;
 
   @override
   State<SortFilterBottomSheet> createState() => _SortFilterBottomSheetState();
@@ -15,11 +16,13 @@ class SortFilterBottomSheet extends StatefulWidget {
 class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final List<String?> _selectedSortOption = List.filled(4, null);
+  final _sortCategories = ['Time'];
+  final Map<String, String> _selectedSortOption = {};
   List<FieldTypeModel> fieldList = [];
   List<FieldTypeModel> postTypeList = [];
   bool isLoading = false;
-  Map<String, List<dynamic>> selectedFilters = {};
+  final Map<String, List<dynamic>> _selectedFilters = {};
+  final sortTimeOptions = ['Newest First', 'Oldest First'];
 
   final List<String> _filterCategories = [
     'Field',
@@ -45,34 +48,13 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
   }
 
   void _resetFilters() {
-    selectedFilters.clear();
-    // setState(() {
-    //   _filterData.forEach((key, value) {
-    //     value.updateAll((filterKey, filterValue) => false);
-    //   });
-    // });
+    _selectedFilters.clear();
+    setState(() {});
   }
 
   void _applyFilters() {
-    // final selectedFilters = <String, List<String>>{};
-    // _filterData.entries.expand((category) {
-    //   return category.value.entries
-    //       .where((filter) => filter.value)
-    //       .map((filter) => filter.key);
-    // }).toList();
-
-    // for (var i = 0; i < _filterData.keys.length; i++) {
-    //   selectedFilters[_filterCategories[i]] = _filterData[_filterCategories[i]]!
-    //       .entries
-    //       .where((filter) => filter.value)
-    //       .map((e) => e.key)
-    //       .toList();
-    // }
-
-    print('Selected Filters: $selectedFilters');
-    //TODO: Implement Filter API Call
     Navigator.pop(context);
-    widget.onApplyFilter(selectedFilters);
+    widget.onApplyFilter(_selectedFilters, _selectedSortOption);
   }
 
   void _getIntialData() async {
@@ -97,22 +79,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
         []; // Ensure uniqueness
     _filterData = {
       _filterCategories[0]: fieldList,
-      // {
-      //   'Ayurvedic (120)': false,
-      //   'Allopathy (60)': false,
-      //   'Homeopathy (40)': false,
-      //   'Osteopathy (40)': false,
-      //   'Acupuncture (25)': false,
-      // },
       _filterCategories[1]: postTypeList,
-      // {
-      //   'Event(120)': false,
-      //   'Job Hiring(60)': false,
-      //   'Product Requirement(40)': false,
-      //   'Supplier Requirement(40)': false,
-      //   'Workshops(25)': false,
-      //   'Campaigns(25)': false,
-      // },
       _filterCategories[2]: ['Today(120)'],
       //  {
       //   'Today(120)': false,
@@ -194,7 +161,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _sectionHeader('Time', 'assets/filter/greyc.png'),
-            _buildOptionRow(['Newest First', 'Oldest First'], 0),
+            _buildOptionRow(sortTimeOptions, _sortCategories[0]),
             // const SizedBox(height: 6),
             // _sectionHeader('Location', 'assets/filter/greyll.png'),
             // _buildOptionRow(['Closest', 'Farthest'], 1),
@@ -211,7 +178,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
   }
 
 // Helper to create rows of buttons for options
-  Widget _buildOptionRow(List<String> options, int sectionIndex) {
+  Widget _buildOptionRow(List<String> options, String sortCategory) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: Row(
@@ -223,16 +190,16 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedSortOption[sectionIndex] = option;
+                    _selectedSortOption[sortCategory] = option;
                   });
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  backgroundColor: _selectedSortOption[sectionIndex] == option
+                  backgroundColor: _selectedSortOption[sortCategory] == option
                       ? Colors.deepPurpleAccent
                       : Colors.white,
                   side: BorderSide(
-                    color: _selectedSortOption[sectionIndex] == option
+                    color: _selectedSortOption[sortCategory] == option
                         ? Colors.deepPurpleAccent
                         : Colors.grey.shade300,
                   ),
@@ -243,7 +210,7 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                 child: Text(
                   option,
                   style: TextStyle(
-                      color: _selectedSortOption[sectionIndex] == option
+                      color: _selectedSortOption[sortCategory] == option
                           ? Colors.white
                           : Colors.black87,
                       fontWeight: FontWeight.w400,
@@ -356,18 +323,18 @@ class _SortFilterBottomSheetState extends State<SortFilterBottomSheet>
                         color: Colors.black87,
                       ),
                     ),
-                    value: (selectedFilters[_selectedFilterCategory] ?? [])
+                    value: (_selectedFilters[_selectedFilterCategory] ?? [])
                         .contains(option),
                     // _filterData[_selectedFilterCategory]![option],
                     activeColor: buttonColor,
                     onChanged: (bool? value) {
                       if (value == true) {
                         final tempList =
-                            selectedFilters[_selectedFilterCategory] ?? [];
+                            _selectedFilters[_selectedFilterCategory] ?? [];
                         tempList.add(option);
-                        selectedFilters[_selectedFilterCategory] = tempList;
+                        _selectedFilters[_selectedFilterCategory] = tempList;
                       } else {
-                        selectedFilters[_selectedFilterCategory]!
+                        _selectedFilters[_selectedFilterCategory]!
                             .remove(option);
                       }
                       setState(() {
