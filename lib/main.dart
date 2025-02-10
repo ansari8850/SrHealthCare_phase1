@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: PaymentPlan()
-        //  SharedPreferenceHelper().getAccessToken() != null
+        // SharedPreferenceHelper().getAccessToken() != null
         //     ? const BottomNavPage()
         //     : SharedPreferenceHelper().getOnboardingView()
         //         ? const LoginPages()
