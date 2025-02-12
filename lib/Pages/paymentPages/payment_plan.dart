@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sr_health_care/Pages/paymentPages/payment_mode_selection.dart';
+import 'package:intl/intl.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:sr_health_care/Pages/paymentPages/payment_status.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
-
-// PAGE 1: Select Subscription Plan
 
 class PaymentPlan extends StatefulWidget {
   const PaymentPlan({super.key});
@@ -16,8 +16,9 @@ class PaymentPlan extends StatefulWidget {
 
 class _PaymentPlanState extends State<PaymentPlan> {
   String? selectedPlan; // Tracks the selected plan's id.
+  late Razorpay _razorpay;
 
-  // List of subscription plans.
+  // List of subscription plans (with an 'amount' in paise).
   final List<Map<String, dynamic>> _plans = [
     {
       'id': 'student',
@@ -26,6 +27,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       'discount': '20% off',
       'originalMonthly': '₹41.66',
       'discountedMonthly': '₹33.25/Mo',
+      'amount': 399.00, // Amount in paise.
     },
     {
       'id': 'commercial',
@@ -34,6 +36,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       'discount': '20% off',
       'originalMonthly': '₹70.22',
       'discountedMonthly': '₹49.90/Mo',
+      'amount': 599.00, // Amount in paise.
     },
   ];
 
@@ -65,23 +68,77 @@ class _PaymentPlanState extends State<PaymentPlan> {
     },
   ];
 
-  void _navigateToPaymentMode() {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize Razorpay.
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  /// Called when payment succeeds.
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // Get the selected plan details.
+    final selectedPlanDetails =
+        _plans.firstWhere((plan) => plan['id'] == selectedPlan);
+    // Prepare payment details.
+    final paymentDetails = {
+      'paymentReceipt': response.paymentId ?? 'N/A',
+      'userId': 'User123', // Replace with the actual user id.
+      'dateTime': DateFormat("d MMM yyyy 'at' hh:mma")
+          .format(DateTime.now())
+          .toLowerCase(),
+      'planName': selectedPlanDetails['name'],
+    };
+
+    // Navigate to the Payment Status page.
+    Get.to(() => const PaymentStatusPage(), arguments: paymentDetails);
+  }
+
+  /// Called when payment fails.
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Get.snackbar('Payment Failed', response.message ?? 'An error occurred');
+  }
+
+  /// Called when an external wallet is selected.
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    Get.snackbar('External Wallet Selected', response.walletName ?? '');
+  }
+
+  /// Opens the Razorpay checkout with the selected plan's options.
+  void _openRazorpay() {
     if (selectedPlan == null) {
       Get.snackbar('Error', 'Please select a subscription plan.');
       return;
     }
-
-    // Get the details of the selected plan.
     final selectedPlanDetails =
         _plans.firstWhere((plan) => plan['id'] == selectedPlan);
+    var options = {
+      'key': 'rzp_live_bSpvog2er8hEyl', // Your live key.
+      'amount': selectedPlanDetails['amount'],
+      'name': selectedPlanDetails['name'],
+      'description': '${selectedPlanDetails['yearlyPrice']} subscription',
+      'prefill': {'contact': '9876543210', 'email': 'test@example.com'},
+    };
 
-    // Navigate to the Payment Mode Selection page, passing the selected plan details.
-    Get.to(() => PaymentModeSelection(), arguments: selectedPlanDetails);
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      Get.snackbar('Error', 'Error in opening payment gateway: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear(); // Remove all event listeners.
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get details of the currently selected plan (if any) for dynamic text.
+    // Get details of the currently selected plan (if any).
     final selectedPlanDetails = selectedPlan != null
         ? _plans.firstWhere((plan) => plan['id'] == selectedPlan)
         : null;
@@ -90,7 +147,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       backgroundColor: whiteColor,
       appBar: PreferredSize(
         preferredSize: Size(Get.width, 170),
-        child: PlannerAppBar(), // Assume this is your custom AppBar widget.
+        child: const PlannerAppBar(), // Your custom AppBar widget.
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -113,7 +170,6 @@ class _PaymentPlanState extends State<PaymentPlan> {
               ),
             ),
             const SizedBox(height: 20),
-
             // Build plan selection containers dynamically.
             Column(
               children: _plans.map((plan) {
@@ -137,7 +193,6 @@ class _PaymentPlanState extends State<PaymentPlan> {
               }).toList(),
             ),
             const SizedBox(height: 20),
-
             // Features list built dynamically.
             Container(
               padding: const EdgeInsets.all(10),
@@ -183,7 +238,6 @@ class _PaymentPlanState extends State<PaymentPlan> {
               ),
             ),
             const SizedBox(height: 20),
-
             // Dynamic RichText showing the selected plan details.
             selectedPlanDetails != null
                 ? RichText(
@@ -228,7 +282,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: InkWell(
-          onTap: _navigateToPaymentMode,
+          onTap: _openRazorpay,
           child: Center(
             child: CustomText(
               text: 'Subscribe Now',
@@ -340,72 +394,79 @@ class _PaymentPlanState extends State<PaymentPlan> {
   }
 }
 
+/// Custom Planner AppBar with positioned images.
 class PlannerAppBar extends StatelessWidget {
-  const PlannerAppBar({
-    super.key,
-  });
+  const PlannerAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 170,
-        flexibleSpace: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(color: whiteColor),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      toolbarHeight: 170,
+      flexibleSpace: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(color: whiteColor),
+          ),
+          Positioned(
+            top: 40,
+            left: MediaQuery.of(context).size.width / 3,
+            child: Image.asset(
+              'assets/login/plannerlogo.png',
+              height: 100,
             ),
-            Positioned(
-                top: 40,
-                left: MediaQuery.of(context).size.width / 3,
-                child: Image.asset(
-                  'assets/login/plannerlogo.png',
-                  height: 100,
-                )),
-            Positioned(
-                top: 30,
-                left: MediaQuery.of(context).size.width / 6.8,
-                child: Image.asset(
-                  'assets/login/Sparkles.png',
-                  height: 50,
-                )),
-            Positioned(
-                top: 10,
-                right: MediaQuery.of(context).size.width / 6.8,
-                child: Image.asset(
-                  'assets/login/Sparkles.png',
-                  height: 50,
-                )),
-            Positioned(
-                bottom: 10,
-                left: MediaQuery.of(context).size.width / 6.8,
-                child: Image.asset(
-                  'assets/login/Sparkles.png',
-                  height: 50,
-                )),
-            Positioned(
-                bottom: 40,
-                right: MediaQuery.of(context).size.width / 4.3,
-                child: Image.asset(
-                  'assets/login/Sparkles.png',
-                  height: 50,
-                )),
-            Positioned(
-                bottom: 10,
-                right: 30,
-                child: Image.asset(
-                  'assets/login/Collision.png',
-                  height: 50,
-                )),
-            Positioned(
-                top: 80,
-                left: 10,
-                child: Image.asset(
-                  'assets/login/Collision.png',
-                  height: 50,
-                )),
-          ],
-        ));
+          ),
+          Positioned(
+            top: 30,
+            left: MediaQuery.of(context).size.width / 6.8,
+            child: Image.asset(
+              'assets/login/Sparkles.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            top: 10,
+            right: MediaQuery.of(context).size.width / 6.8,
+            child: Image.asset(
+              'assets/login/Sparkles.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: MediaQuery.of(context).size.width / 6.8,
+            child: Image.asset(
+              'assets/login/Sparkles.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            bottom: 40,
+            right: MediaQuery.of(context).size.width / 4.3,
+            child: Image.asset(
+              'assets/login/Sparkles.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 30,
+            child: Image.asset(
+              'assets/login/Collision.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            top: 80,
+            left: 10,
+            child: Image.asset(
+              'assets/login/Collision.png',
+              height: 50,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
