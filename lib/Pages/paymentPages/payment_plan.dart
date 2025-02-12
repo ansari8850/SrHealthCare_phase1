@@ -27,7 +27,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       'discount': '20% off',
       'originalMonthly': '₹41.66',
       'discountedMonthly': '₹33.25/Mo',
-      'amount': 399.00, // Amount in paise.
+      'amount': 39900, // Amount in paise.
     },
     {
       'id': 'commercial',
@@ -36,7 +36,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       'discount': '20% off',
       'originalMonthly': '₹70.22',
       'discountedMonthly': '₹49.90/Mo',
-      'amount': 599.00, // Amount in paise.
+      'amount': 59900, // Amount in paise.
     },
   ];
 
