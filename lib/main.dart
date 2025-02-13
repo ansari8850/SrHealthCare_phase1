@@ -5,7 +5,10 @@ import 'package:sr_health_care/Controller/follow_unfollow_controller.dart';
 import 'package:sr_health_care/Controller/save_post_controller.dart';
 import 'package:sr_health_care/Pages/authPages/login_pages.dart';
 import 'package:sr_health_care/Pages/paymentPages/payment_plan.dart';
+import 'package:sr_health_care/Pages/paymentPages/payment_status.dart';
 import 'package:sr_health_care/Pages/splash/screen1.dart';
+import 'package:sr_health_care/Pages/userDetailPage/user_detail_form.dart';
+import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/firebase_options.dart';
 import 'Global/bottom_navigation.dart';
@@ -34,9 +37,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+          useMaterial3: false,
         ),
-        home: LoginPages()
+        home: UserDetailForm()
         // SharedPreferenceHelper().getAccessToken() != null
         //     ? const BottomNavPage()
         //     : SharedPreferenceHelper().getOnboardingView()

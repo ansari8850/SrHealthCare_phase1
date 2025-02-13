@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:sr_health_care/Pages/paymentPages/payment_status.dart';
 import 'package:sr_health_care/const/colors.dart';
+import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
 
 class PaymentPlan extends StatefulWidget {
@@ -17,6 +18,12 @@ class PaymentPlan extends StatefulWidget {
 class _PaymentPlanState extends State<PaymentPlan> {
   String? selectedPlan; // Tracks the selected plan's id.
   late Razorpay _razorpay;
+  final String _userName =
+      "${SharedPreferenceHelper().getUserData()?.name ?? ''} ${SharedPreferenceHelper().getUserData()?.lastName ?? ''}";
+  final int _userID = SharedPreferenceHelper().getUserData()?.id ?? 0;
+  final String _userEmail = SharedPreferenceHelper().getUserData()?.email ?? '';
+  final String _userMobileNumber =
+      SharedPreferenceHelper().getUserData()?.mobileNo ?? '';
 
   // List of subscription plans (with an 'amount' in paise).
   final List<Map<String, dynamic>> _plans = [
@@ -85,8 +92,9 @@ class _PaymentPlanState extends State<PaymentPlan> {
         _plans.firstWhere((plan) => plan['id'] == selectedPlan);
     // Prepare payment details.
     final paymentDetails = {
+      'userName': _userName,
       'paymentReceipt': response.paymentId ?? 'N/A',
-      'userId': 'User123', // Replace with the actual user id.
+      'userId': _userID,
       'dateTime': DateFormat("d MMM yyyy 'at' hh:mma")
           .format(DateTime.now())
           .toLowerCase(),
@@ -120,7 +128,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
       'amount': selectedPlanDetails['amount'],
       'name': selectedPlanDetails['name'],
       'description': '${selectedPlanDetails['yearlyPrice']} subscription',
-      'prefill': {'contact': '9876543210', 'email': 'test@example.com'},
+      'prefill': {'contact': _userEmail, 'email': _userMobileNumber},
     };
 
     try {
