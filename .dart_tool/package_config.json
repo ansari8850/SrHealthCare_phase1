@@ -152,6 +152,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "file_picker",
+      "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/file_picker-8.3.7",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "file_selector_linux",
       "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/file_selector_linux-0.9.3+2",
       "packageUri": "lib/",
@@ -366,6 +372,24 @@
       "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/image-4.5.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "image_cropper",
+      "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/image_cropper-9.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_cropper_for_web",
+      "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/image_cropper_for_web-6.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "image_cropper_platform_interface",
+      "rootUri": "file:///Users/atifansari/.pub-cache/hosted/pub.dev/image_cropper_platform_interface-7.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "image_picker",
@@ -848,7 +872,7 @@
       "languageVersion": "3.4"
     }
   ],
-  "generated": "2025-02-12T20:50:36.951314Z",
+  "generated": "2025-02-14T20:39:11.669145Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///Users/atifansari/flutter",
