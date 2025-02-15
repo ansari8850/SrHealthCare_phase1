@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sr_health_care/CustomWidget/custom_textfiled.dart';
+import 'package:sr_health_care/services/image_picker_service.dart';
 
 class BioStepWidget extends StatefulWidget {
   const BioStepWidget({super.key});
@@ -18,8 +19,9 @@ class _BioStepWidgetState extends State<BioStepWidget> {
   File? _profileImage;
 
   Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: source);
+    final pickedFile = source == ImageSource.camera
+        ? (await ImagePickerService().pickImageFromCamera())
+        : (await ImagePickerService().pickImageFromGallery());
     if (pickedFile != null) {
       // Crop the image
       CroppedFile? croppedFile = await ImageCropper().cropImage(
