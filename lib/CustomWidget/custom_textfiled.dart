@@ -10,6 +10,8 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
+  final Widget? prefix;
+  final Widget? suffix;
 
   const CustomTextField({
     super.key,
@@ -20,6 +22,8 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.maxLength,
     this.inputFormatters,
+    this.prefix,
+    this.suffix,
   });
 
   @override
@@ -65,11 +69,26 @@ class CustomTextField extends StatelessWidget {
             validator: validator,
             maxLength: maxLength,
             inputFormatters: inputFormatters,
-            decoration: const InputDecoration(
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+            decoration: InputDecoration(
               contentPadding: EdgeInsets.all(12),
               border: InputBorder.none,
               // Hide the built-in counter text
               counterText: '',
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: prefix,
+              ),
+              prefixIconConstraints: BoxConstraints(maxHeight: 50),
+              suffixIcon: Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: suffix,
+              ),
+              suffixIconConstraints: BoxConstraints(maxHeight: 50),
             ),
           ),
         ),

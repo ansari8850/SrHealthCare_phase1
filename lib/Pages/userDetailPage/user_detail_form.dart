@@ -17,18 +17,15 @@ class UserDetailForm extends StatefulWidget {
 
 class _UserDetailFormState extends State<UserDetailForm> {
   // Personal Details Controllers
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController mobileController =
-      TextEditingController(text: "+91 ");
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController displayNameController = TextEditingController();
-  final TextEditingController emergencyNumberController =
-      TextEditingController();
-
+  late final TextEditingController _fullNameController;
+  late final TextEditingController _mobileController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _displayNameController;
+  late final TextEditingController _emergencyNumberController;
   // Address Controllers
-  final TextEditingController street1Controller = TextEditingController();
-  final TextEditingController street2Controller = TextEditingController();
-  final TextEditingController zipCodeController = TextEditingController();
+  late final TextEditingController _street1Controller;
+  late final TextEditingController _street2Controller;
+  late final TextEditingController _zipCodeController;
 
   // Dropdown selections for personal
   String? selectedUserType;
@@ -63,16 +60,42 @@ class _UserDetailFormState extends State<UserDetailForm> {
   int currentStep = 0;
   List<String> steptiles = ["Personal", "Address", "Education", "Bio"];
 
+  @override
+  void initState() {
+    super.initState();
+    _fullNameController = TextEditingController();
+    _mobileController = TextEditingController();
+    _emailController = TextEditingController();
+    _displayNameController = TextEditingController();
+    _emergencyNumberController = TextEditingController();
+    _street1Controller = TextEditingController();
+    _street2Controller = TextEditingController();
+    _zipCodeController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _mobileController.dispose();
+    _emailController.dispose();
+    _displayNameController.dispose();
+    _emergencyNumberController.dispose();
+    _street1Controller.dispose();
+    _street2Controller.dispose();
+    _zipCodeController.dispose();
+    super.dispose();
+  }
+
   // Validate fields for the current step
   bool validateCurrentStepFields() {
     if (currentStep == 0) {
       // Validate Personal details
-      if (fullNameController.text.isEmpty ||
-          mobileController.text.length != 14 || // "+91 " (4) + 10 digits
-          emailController.text.isEmpty ||
+      if (_fullNameController.text.isEmpty ||
+          _mobileController.text.length != 10 || // "+91 " (4) + 10 digits
+          _emailController.text.isEmpty ||
           !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|in)$")
-              .hasMatch(emailController.text) ||
-          displayNameController.text.isEmpty ||
+              .hasMatch(_emailController.text) ||
+          _displayNameController.text.isEmpty ||
           selectedUserType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -88,8 +111,8 @@ class _UserDetailFormState extends State<UserDetailForm> {
       if (selectedCountry == null ||
           selectedState == null ||
           selectedCity == null ||
-          street1Controller.text.isEmpty ||
-          zipCodeController.text.isEmpty) {
+          _street1Controller.text.isEmpty ||
+          _zipCodeController.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Please fill all required address fields correctly."),
@@ -98,7 +121,7 @@ class _UserDetailFormState extends State<UserDetailForm> {
         );
         return false;
       }
-      if (!RegExp(r'^\d+$').hasMatch(zipCodeController.text)) {
+      if (!RegExp(r'^\d+$').hasMatch(_zipCodeController.text)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Enter a valid zip code."),
@@ -179,12 +202,20 @@ class _UserDetailFormState extends State<UserDetailForm> {
           ),
           CustomTextField(
             label: "Full Name",
-            controller: fullNameController,
+            controller: _fullNameController,
             isRequired: true,
           ),
           CustomTextField(
             label: "Mobile Number",
-            controller: mobileController,
+            prefix: Text(
+              '+91 ',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+            controller: _mobileController,
             isRequired: true,
             keyboardType: TextInputType.phone,
             maxLength: 14,
@@ -205,7 +236,7 @@ class _UserDetailFormState extends State<UserDetailForm> {
           ),
           CustomTextField(
             label: "Email",
-            controller: emailController,
+            controller: _emailController,
             isRequired: true,
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
@@ -221,12 +252,12 @@ class _UserDetailFormState extends State<UserDetailForm> {
           ),
           CustomTextField(
             label: "Display Name",
-            controller: displayNameController,
+            controller: _displayNameController,
             isRequired: true,
           ),
           CustomTextField(
             label: "Emergency Number",
-            controller: emergencyNumberController,
+            controller: _emergencyNumberController,
             isRequired: false,
             keyboardType: TextInputType.phone,
           ),
@@ -282,17 +313,17 @@ class _UserDetailFormState extends State<UserDetailForm> {
           ),
           CustomTextField(
             label: "Street 1",
-            controller: street1Controller,
+            controller: _street1Controller,
             isRequired: true,
           ),
           CustomTextField(
             label: "Street 2",
-            controller: street2Controller,
+            controller: _street2Controller,
             isRequired: false,
           ),
           CustomTextField(
             label: "Zip Code",
-            controller: zipCodeController,
+            controller: _zipCodeController,
             isRequired: true,
             keyboardType: TextInputType.number,
             inputFormatters: [
@@ -368,122 +399,167 @@ class _UserDetailFormState extends State<UserDetailForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: whiteColor,
-        automaticallyImplyLeading: false,
-        toolbarHeight: 150,
-        flexibleSpace: Padding(
-          padding: const EdgeInsets.only(top: 30, left: 10, right: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                text: 'User Details',
-                size: 20,
-                color: blackColor,
-                weight: FontWeight.w500,
-              ),
-              const SizedBox(height: 10),
-              CustomText(
-                text: 'Fill The Below Form To Know More About You',
-                size: 12,
-                color: Colors.grey,
-                weight: FontWeight.w400,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: List.generate(steptiles.length, (index) {
-                  bool isActive = index == currentStep;
-                  bool isComplete = index < currentStep;
-                  return Expanded(
-                    child: Row(
-                      children: [
-                        if (index != 0)
-                          Expanded(
-                            child: Container(
-                              height: 2,
-                              color:
-                                  isComplete ? buttonColor : Colors.grey[300],
-                            ),
-                          ),
-                        GestureDetector(
-                          onTap: () => setState(() {
-                            currentStep = index;
-                          }),
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isActive ? buttonColor : Colors.grey,
-                                width: isActive ? 3 : 1,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.circle,
-                              size: 5,
-                              color: isActive ? buttonColor : Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: steptiles
-                    .asMap()
-                    .map((index, title) => MapEntry(
-                        index,
-                        Text(
-                          title,
-                          style: TextStyle(
-                            color: currentStep >= index
-                                ? buttonColor
-                                : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )))
-                    .values
-                    .toList(),
-              )
-            ],
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildStepContent(),
-            const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (currentStep > 0)
-                    ElevatedButton(
-                      onPressed: previousStep,
-                      child: const Text("Previous"),
-                    ),
-                  ElevatedButton(
-                    onPressed: nextStep,
-                    child: Text(
-                      currentStep == steptiles.length - 1 ? "Submit" : "Next",
-                    ),
+                  CustomText(
+                    text: 'User Details',
+                    size: 20,
+                    color: blackColor,
+                    weight: FontWeight.w500,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomText(
+                    text: 'Fill The Below Form To Know More About You',
+                    size: 12,
+                    color: Colors.grey,
+                    weight: FontWeight.w400,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: List.generate(steptiles.length, (index) {
+                      bool isActive = index == currentStep;
+                      bool isComplete = index < currentStep;
+                      final isFirst = index == 0;
+                      final isLast = index == steptiles.length - 1;
+                      return Expanded(
+                        flex: isFirst || isLast ? 2 : 3,
+                        child: StepIndicator(
+                          isFirst: isFirst,
+                          isLast: isLast,
+                          isActive: isActive,
+                          isComplete: isComplete,
+                          title: steptiles[index],
+                          onTap: () {
+                            setState(() {
+                              currentStep = index;
+                            });
+                          },
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildStepContent(),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (currentStep > 0)
+                            ElevatedButton(
+                              onPressed: previousStep,
+                              child: const Text("Previous"),
+                            ),
+                          ElevatedButton(
+                            onPressed: nextStep,
+                            child: Text(
+                              currentStep == steptiles.length - 1
+                                  ? "Submit"
+                                  : "Next",
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class StepIndicator extends StatelessWidget {
+  const StepIndicator({
+    super.key,
+    required this.isActive,
+    required this.onTap,
+    required this.isComplete,
+    this.isLast = false,
+    required this.title,
+    required this.isFirst,
+  });
+  final bool isActive;
+  final bool isComplete;
+  final bool isLast;
+  final bool isFirst;
+  final String title;
+  final void Function() onTap;
+
+  bool get completeOrActive => isActive || isComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: isFirst
+          ? CrossAxisAlignment.start
+          : isLast
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment:
+              isFirst ? MainAxisAlignment.start : MainAxisAlignment.center,
+          children: [
+            if (!isFirst)
+              Expanded(
+                child: Container(
+                  height: 2,
+                  color: completeOrActive ? buttonColor : Colors.grey[300],
+                ),
+              ),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: completeOrActive ? buttonColor : Colors.grey,
+                  width: completeOrActive ? 3 : 1,
+                ),
+              ),
+              child: Icon(
+                Icons.circle,
+                size: 5,
+                color: completeOrActive ? buttonColor : Colors.grey,
+              ),
+            ),
+            if (!isLast)
+              Expanded(
+                child: Container(
+                  height: 2,
+                  color: completeOrActive ? buttonColor : Colors.grey[300],
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: TextStyle(
+            color: isActive ? buttonColor : Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
     );
   }
 }

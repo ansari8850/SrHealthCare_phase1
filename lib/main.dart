@@ -32,19 +32,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Sr HealthCare Community',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: false,
-      ),
-      home: //UserDetailForm()
-          SharedPreferenceHelper().getAccessToken() != null
-              ? const BottomNavPage()
-              : SharedPreferenceHelper().getOnboardingView()
-                  ? const LoginPages()
-                  : const OnboardingScreens(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Sr HealthCare Community',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: false,
+        ),
+        home: UserDetailForm()
+        // SharedPreferenceHelper().getAccessToken() != null
+        //     ? const BottomNavPage()
+        //     : SharedPreferenceHelper().getOnboardingView()
+        //         ? const LoginPages()
+        //         : const OnboardingScreens(),
+        );
   }
 }
