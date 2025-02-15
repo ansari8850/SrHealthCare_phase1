@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: false,
         ),
-        home: UserDetailForm()
+        home: PaymentPlan()
         // SharedPreferenceHelper().getAccessToken() != null
         //     ? const BottomNavPage()
         //     : SharedPreferenceHelper().getOnboardingView()

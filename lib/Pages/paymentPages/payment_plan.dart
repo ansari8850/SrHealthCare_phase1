@@ -7,6 +7,7 @@ import 'package:sr_health_care/Pages/paymentPages/payment_status.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/sharedference.dart';
 import 'package:sr_health_care/const/text.dart';
+import 'package:sr_health_care/utils/app_extensions.dart';
 
 class PaymentPlan extends StatefulWidget {
   const PaymentPlan({super.key});
@@ -153,14 +154,11 @@ class _PaymentPlanState extends State<PaymentPlan> {
 
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: PreferredSize(
-        preferredSize: Size(Get.width, 170),
-        child: const PlannerAppBar(), // Your custom AppBar widget.
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const _PageHeader().toSliver,
+            SizedBox(height: 10).toSliver,
             Center(
               child: CustomText(
                 text: "Unlock the full posting experience with our ",
@@ -168,7 +166,7 @@ class _PaymentPlanState extends State<PaymentPlan> {
                 color: const Color(0xff0A4D3C),
                 weight: FontWeight.w400,
               ),
-            ),
+            ).toSliver,
             Center(
               child: CustomText(
                 text: "Designed Subscription Plans",
@@ -176,31 +174,32 @@ class _PaymentPlanState extends State<PaymentPlan> {
                 color: buttonColor,
                 weight: FontWeight.w600,
               ),
-            ),
-            const SizedBox(height: 20),
+            ).toSliver,
+            const SizedBox(height: 20).toSliver,
             // Build plan selection containers dynamically.
-            Column(
-              children: _plans.map((plan) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: _buildPlanContainer(
-                    planName: plan['name'],
-                    yearlyPrice: plan['yearlyPrice'],
-                    discount: plan['discount'],
-                    originalMonthly: plan['originalMonthly'],
-                    discountedMonthly: plan['discountedMonthly'],
-                    isSelected: selectedPlan == plan['id'],
-                    value: plan['id'],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPlan = value;
-                      });
-                    },
-                  ),
+            SliverList.separated(
+              itemCount: _plans.length,
+              separatorBuilder: (_, __) => SizedBox(height: 20),
+              itemBuilder: (_, index) {
+                final plan = _plans[index];
+                return PlanContainerWidget(
+                  selectedPlan: selectedPlan,
+                  planName: plan['name'],
+                  yearlyPrice: plan['yearlyPrice'],
+                  discount: plan['discount'],
+                  originalMonthly: plan['originalMonthly'],
+                  discountedMonthly: plan['discountedMonthly'],
+                  isSelected: selectedPlan == plan['id'],
+                  value: plan['id'],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedPlan = value;
+                    });
+                  },
                 );
-              }).toList(),
+              },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20).toSliver,
             // Features list built dynamically.
             Container(
               padding: const EdgeInsets.all(10),
@@ -244,8 +243,8 @@ class _PaymentPlanState extends State<PaymentPlan> {
                   }),
                 ],
               ),
-            ),
-            const SizedBox(height: 20),
+            ).toSliver,
+            const SizedBox(height: 20).toSliver,
             // Dynamic RichText showing the selected plan details.
             selectedPlanDetails != null
                 ? RichText(
@@ -276,9 +275,9 @@ class _PaymentPlanState extends State<PaymentPlan> {
                         )
                       ],
                     ),
-                  )
-                : const SizedBox.shrink(),
-            const SizedBox(height: 20),
+                  ).toSliver
+                : const SizedBox.shrink().toSliver,
+            const SizedBox(height: 20).toSliver,
           ],
         ),
       ),
@@ -303,122 +302,143 @@ class _PaymentPlanState extends State<PaymentPlan> {
       ),
     );
   }
+}
 
-  // Widget to build each plan container.
-  Widget _buildPlanContainer({
-    required String planName,
-    required String yearlyPrice,
-    required String discount,
-    required String originalMonthly,
-    required String discountedMonthly,
-    required bool isSelected,
-    required String value,
-    required Function(String?) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        border: Border.all(color: buttonColor, width: 1),
+class PlanContainerWidget extends StatelessWidget {
+  const PlanContainerWidget({
+    super.key,
+    required this.planName,
+    required this.yearlyPrice,
+    required this.discount,
+    required this.originalMonthly,
+    required this.discountedMonthly,
+    required this.isSelected,
+    required this.value,
+    required this.onChanged,
+    required this.selectedPlan,
+  });
+  final String planName;
+  final String yearlyPrice;
+  final String discount;
+  final String originalMonthly;
+  final String discountedMonthly;
+  final bool isSelected;
+  final String value;
+  final Function(String?) onChanged;
+  final String? selectedPlan;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: InkWell(
+        onTap: () {
+          onChanged.call(value);
+        },
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Row(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: buttonColor, width: 1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
             children: [
-              Radio<String>(
-                splashRadius: 0.0,
-                value: value,
-                groupValue: selectedPlan,
-                onChanged: onChanged,
-                activeColor: buttonColor,
+              Row(
+                children: [
+                  Radio<String>(
+                    splashRadius: 0.0,
+                    value: value,
+                    groupValue: selectedPlan,
+                    onChanged: onChanged,
+                    activeColor: buttonColor,
+                  ),
+                  CustomText(
+                    text: planName,
+                    size: 18,
+                    color: blackColor,
+                    weight: FontWeight.w500,
+                  ),
+                ],
               ),
-              CustomText(
-                text: planName,
-                size: 18,
-                color: blackColor,
-                weight: FontWeight.w500,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      text: 'Yearly',
+                      size: 16,
+                      color: blackColor,
+                      weight: FontWeight.w500,
+                    ),
+                    CustomText(
+                      text: yearlyPrice,
+                      size: 16,
+                      color: blackColor,
+                      weight: FontWeight.w500,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      text: discount,
+                      size: 16,
+                      color: const Color(0xff402CD8),
+                      weight: FontWeight.w500,
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        text: originalMonthly,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '  $discountedMonthly',
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey,
+                              decoration: TextDecoration.none,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                  text: 'Yearly',
-                  size: 16,
-                  color: blackColor,
-                  weight: FontWeight.w500,
-                ),
-                CustomText(
-                  text: yearlyPrice,
-                  size: 16,
-                  color: blackColor,
-                  weight: FontWeight.w500,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                  text: discount,
-                  size: 16,
-                  color: const Color(0xff402CD8),
-                  weight: FontWeight.w500,
-                ),
-                RichText(
-                  text: TextSpan(
-                    text: originalMonthly,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '  $discountedMonthly',
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey,
-                          decoration: TextDecoration.none,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
 /// Custom Planner AppBar with positioned images.
-class PlannerAppBar extends StatelessWidget {
-  const PlannerAppBar({super.key});
+class _PageHeader extends StatelessWidget {
+  const _PageHeader();
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      toolbarHeight: 170,
-      flexibleSpace: Stack(
+    return SizedBox(
+      height: 140,
+      child: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(color: whiteColor),
+          ColoredBox(
+            color: whiteColor,
           ),
           Positioned(
-            top: 40,
+            top: 20,
             left: MediaQuery.of(context).size.width / 3,
             child: Image.asset(
               'assets/login/plannerlogo.png',
@@ -426,24 +446,24 @@ class PlannerAppBar extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 30,
-            left: MediaQuery.of(context).size.width / 6.8,
-            child: Image.asset(
-              'assets/login/Sparkles.png',
-              height: 50,
-            ),
-          ),
-          Positioned(
             top: 10,
-            right: MediaQuery.of(context).size.width / 6.8,
+            left: MediaQuery.of(context).size.width / 9,
             child: Image.asset(
               'assets/login/Sparkles.png',
               height: 50,
             ),
           ),
           Positioned(
-            bottom: 10,
-            left: MediaQuery.of(context).size.width / 6.8,
+            top: 0,
+            right: MediaQuery.of(context).size.width / 9,
+            child: Image.asset(
+              'assets/login/Sparkles.png',
+              height: 50,
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            left: MediaQuery.of(context).size.width / 7,
             child: Image.asset(
               'assets/login/Sparkles.png',
               height: 50,
@@ -451,7 +471,7 @@ class PlannerAppBar extends StatelessWidget {
           ),
           Positioned(
             bottom: 40,
-            right: MediaQuery.of(context).size.width / 4.3,
+            right: MediaQuery.of(context).size.width / 7,
             child: Image.asset(
               'assets/login/Sparkles.png',
               height: 50,
@@ -466,7 +486,7 @@ class PlannerAppBar extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 80,
+            bottom: 10,
             left: 10,
             child: Image.asset(
               'assets/login/Collision.png',
