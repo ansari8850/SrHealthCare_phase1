@@ -146,39 +146,35 @@ class ApiService {
   }
 
   // Method to sign in with Google
-  Future<void> signInWithGoogle(BuildContext context) async {
+  // Updated signInWithGoogle in ApiService
+  Future<Map<String, dynamic>?> signInWithGoogle(BuildContext context) async {
     try {
-      // Attempt to sign in with Google
+      // Attempt to sign in with Google.
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User canceled the sign-in process
+        // User canceled the sign-in process.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Google Sign-In canceled by user.")),
         );
-        return;
+        return null;
       }
 
-      // Successfully retrieved user details
-      final String displayName = googleUser.displayName ?? "Unknown";
-      final String email = googleUser.email;
-      final String? photoUrl = googleUser.photoUrl;
+      // Prepare a map with Google user details.
+      final Map<String, dynamic> googleUserData = {
+        "uid": googleUser.id,
+        "displayName": googleUser.displayName ?? "",
+        "email": googleUser.email,
+        "mobile": "", // Google does not provide mobile number.
+        "photoUrl": googleUser.photoUrl ?? "",
+        "isSubscribed": false, // Default value; update as needed.
+      };
 
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Welcome, $displayName!")),
-      );
-
-      // Navigate to the home page directly
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const BottomNavPage()),
-      );
+      // Return the user data (do not navigate here).
+      return googleUserData;
     } catch (e) {
-      // Handle errors during the Google Sign-In process
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred during Google Sign-In: $e")),
-      );
+      // Pass the error upward.
+      rethrow;
     }
   }
 }

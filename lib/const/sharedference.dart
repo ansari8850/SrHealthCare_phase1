@@ -55,4 +55,8 @@ class SharedPreferenceHelper {
     await _prefs!.remove(_accessTokenKey);
     await _prefs!.remove(_userData);
   }
+
+  Future<void> saveGoogleUserData(Map<String, dynamic> googleUserData) async {
+    await _prefs!.setString(_userData, jsonEncode(googleUserData));
+  }
 }
