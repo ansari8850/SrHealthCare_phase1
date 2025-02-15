@@ -92,9 +92,13 @@ class _BioStepWidgetState extends State<BioStepWidget> {
           keyboardType: TextInputType.multiline,
         ),
         const SizedBox(height: 20),
-        Text(
-          "Upload Profile Photo",
-          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Text(
+            "Upload Profile Photo",
+            style:
+                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 10),
         Center(

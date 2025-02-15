@@ -1,4 +1,4 @@
-// user_detail_form.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +7,8 @@ import 'package:sr_health_care/CustomWidget/customdropdown.dart';
 import 'package:sr_health_care/Pages/userDetailPage/bio_step.dart';
 import 'package:sr_health_care/const/colors.dart';
 import 'package:sr_health_care/const/text.dart';
+import 'package:sr_health_care/services/file_picker_service.dart';
+import 'package:path/path.dart' as path;
 
 class UserDetailForm extends StatefulWidget {
   const UserDetailForm({super.key});
@@ -38,7 +40,7 @@ class _UserDetailFormState extends State<UserDetailForm> {
 
   // For Education step
   String? selectedDegree;
-  String? educationPdfFileName; // Stores the selected PDF file name
+  File? educationDoc; // Stores the selected PDF file
 
   // Options for personal dropdowns
   List<String> userTypes = ["Hospital", "Doctor"];
@@ -132,7 +134,7 @@ class _UserDetailFormState extends State<UserDetailForm> {
       }
     } else if (currentStep == 2) {
       // Validate Education fields
-      if (selectedDegree == null || educationPdfFileName == null) {
+      if (selectedDegree == null || educationDoc == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -175,12 +177,13 @@ class _UserDetailFormState extends State<UserDetailForm> {
 
   // Function to pick PDF for Education step (same as before)
   Future<void> pickEducationPdf() async {
-    // Implement PDF picking using your preferred package
-    // This is a placeholder for your PDF picking logic.
-    // After selecting the PDF, update the educationPdfFileName variable.
-    setState(() {
-      educationPdfFileName = "selected_document.pdf";
-    });
+    // Pick PDF file
+    final pdf = await FilePickerService().pickPdfFile();
+    if (pdf != null) {
+      setState(() {
+        educationDoc = pdf;
+      });
+    }
   }
 
   Widget buildStepContent() {
@@ -363,6 +366,7 @@ class _UserDetailFormState extends State<UserDetailForm> {
             child: Container(
               height: 150,
               margin: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.withOpacity(0.5)),
                 borderRadius: BorderRadius.circular(8),
@@ -375,9 +379,10 @@ class _UserDetailFormState extends State<UserDetailForm> {
                     Icon(Icons.upload_file, size: 40, color: Colors.grey),
                     const SizedBox(height: 10),
                     Text(
-                      educationPdfFileName != null
-                          ? educationPdfFileName!
+                      educationDoc != null
+                          ? path.basename(educationDoc!.path)
                           : "Drop your PDF document here for your education",
+                      textAlign: TextAlign.center,
                       style:
                           GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                     ),
